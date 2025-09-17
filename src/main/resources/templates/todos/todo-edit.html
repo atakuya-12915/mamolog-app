@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>タスク編集</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/todo-edit.css">
+</head>
+<body>
+  <header>
+    <h1>ママログ - タスク編集</h1>
+    <nav>
+      <a href="index.html">Todo</a>
+      <a href="#">日記</a>
+      <a href="#">カレンダー</a>
+      <a href="#">マイページ</a>
+    </nav>
+  </header>
+
+  <main class="form-container">
+    <h2>タスク編集</h2>
+    <form id="editTaskForm">
+      <!-- ①期限 -->
+      <label for="deadline">期限</label>
+      <input type="date" id="deadline" required>
+      <input type="time" id="time" required>
+
+      <!-- ②担当者 -->
+      <label for="assignee">担当者</label>
+      <select id="assignee">
+        <option value="papa">ぱぱ</option>
+        <option value="mama">まま</option>
+      </select>
+
+      <!-- ③タイトル -->
+      <label for="title">タイトル</label>
+      <input type="text" id="title" maxlength="20" required>
+
+      <!-- ④タグ -->
+      <label>タグ</label>
+      <div class="tag-section">
+        <button type="button" class="tag-btn">家事</button>
+        <button type="button" class="tag-btn">仕事</button>
+        <button type="button" class="tag-btn">育児</button>
+        <input type="text" id="newTag" placeholder="＋新規タグ">
+      </div>
+      <a href="category.html" class="link-manage">▶ カテゴリ管理へ</a>
+
+      <!-- ⑤カラー -->
+      <label for="color">カラー</label>
+      <input type="color" id="color" value="#ffcc00">
+
+      <!-- ⑥メモ -->
+      <label for="memo">メモ</label>
+      <textarea id="memo" rows="3"></textarea>
+
+      <!-- ボタン -->
+      <div class="form-actions">
+        <button type="submit" class="btn primary">更新</button>
+        <button type="button" class="btn danger" id="deleteBtn">削除</button>
+        <a href="index.html" class="btn secondary">キャンセル</a>
+      </div>
+    </form>
+  </main>
+
+  <script src="js/todo-edit.js"></script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>まもログ | Home</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <button id="menu-toggle" class="menu-btn">☰</button>
+      <nav id="side-menu" class="side-menu">
+        <ul>
+          <li><a href="#" class="nav-link">ログイン</a></li>
+          <li><a href="/todos/new" class="nav-link">Todo作成</a></li>
+          <li><a href="/diary/new" class="nav-link">日記登録</a></li>
+          <li><a href="#" class="nav-link">レポート参照</a></li>
+          <li><a href="#" class="nav-link">設定</a></li>
+        </ul>
+      </nav>
+      <div class="title">まもログ 🐥</div>
+    </header>
+
+    <main class="main-area">
+      <nav class="tabbar">
+        <a class="tab active" href="list.html" data-tab="todo">タスク</a>
+        <a class="tab" href="#" data-tab="diary">日記</a>
+        <a class="tab" href="#" data-tab="calendar">カレンダー</a>
+        <a class="tab" href="#" data-tab="mypage">マイページ</a>
+      </nav>
+
+      <section id="tab-content">
+        <div id="todo" class="tab-pane active">
+          <section class="todo-header">
+            <h1>今日のやること</h1>
+            <div class="remaining">残り：<span id="remainingCount">0</span> 件</div>
+          </section>
+
+          <section class="controls">
+            <input id="searchInput" type="search" placeholder="検索（タイトル／タグ）">
+            <a href="todo-new.html"><button class="btn">＋ 新規作成</button></a>
+          </section>
+
+          <!-- 未完了タスクリスト -->
+          <section class="task-list" id="taskList"></section>
+
+          <!-- 完了タスク折りたたみ -->
+          <section class="completed-tasks">
+            <details>
+              <summary>完了済みタスクを表示</summary>
+              <div class="task-list" id="completedList"></div>
+            </details>
+          </section>
+        </div>
+
+        <div id="diary" class="tab-pane"><div class="placeholder">※日記（実装予定）</div></div>
+        <div id="calendar" class="tab-pane"><div class="placeholder">※カレンダー（実装予定）</div></div>
+      </section>
+    </main>
+
+    <footer class="bottom-nav">
+      <a href="#" class="bn-item active">カレンダー</a>
+      <a href="list.html" class="bn-item">タスク</a>
+      <a href="#" class="bn-item">メモ</a>
+      <a href="#" class="bn-item">マイページ</a>
+    </footer>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>カテゴリ管理</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/category.css">
+</head>
+<body>
+  <header>
+    <h1>ママログ - カテゴリ管理</h1>
+    <nav>
+      <a href="index.html">Todo</a>
+      <a href="#">日記</a>
+      <a href="#">カレンダー</a>
+      <a href="#">マイページ</a>
+    </nav>
+  </header>
+
+  <main class="form-container">
+    <h2>カテゴリ一覧</h2>
+
+    <ul id="categoryList" class="category-list">
+      <!-- JSでカテゴリを挿入 -->
+    </ul>
+
+    <div class="new-category">
+      <input type="text" id="newCategoryInput" placeholder="新しいカテゴリ名">
+      <input type="color" id="newCategoryColor" value="#ffcc00">
+      <button id="addCategoryBtn" class="btn primary">追加</button>
+    </div>
+  </main>
+
+  <script src="js/category.js"></script>
+</body>
+</html>

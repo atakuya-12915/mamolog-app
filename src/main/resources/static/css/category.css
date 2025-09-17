@@ -1,0 +1,25 @@
+.category-list {
+  margin-top: 1.5rem;
+  list-style: none;
+  padding: 0;
+}
+.category-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  margin-bottom: 0.5rem;
+  background: #f9f9f9;
+  border-radius: 6px;
+}
+.category-list button {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.3rem 0.8rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.category-list button:hover {
+  background: #c82333;
+}
