@@ -1,68 +1,45 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-  <meta charset="UTF-8">
-  <title>タスク編集</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/todo-edit.css">
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>Todo編集</title>
+	<link rel="stylesheet" href="css/style.css" />
+	<link rel="stylesheet" href="css/todo-new.css" />
 </head>
+
 <body>
-  <header>
-    <h1>ママログ - タスク編集</h1>
-    <nav>
-      <a href="index.html">Todo</a>
-      <a href="#">日記</a>
-      <a href="#">カレンダー</a>
-      <a href="#">マイページ</a>
-    </nav>
-  </header>
+	<h1>Todo編集</h1>
 
-  <main class="form-container">
-    <h2>タスク編集</h2>
-    <form id="editTaskForm">
-      <!-- ①期限 -->
-      <label for="deadline">期限</label>
-      <input type="date" id="deadline" required>
-      <input type="time" id="time" required>
+	<form th:action="@{/todos/{id}/update(id=${todo.id})}" th:object="${todo}" method="post">
+		<p>タイトル: <input type="text" th:field="*{title}" required /></p>
+		<p>メモ: <input type="text" th:field="*{memo}" /></p>
 
-      <!-- ②担当者 -->
-      <label for="assignee">担当者</label>
-      <select id="assignee">
-        <option value="papa">ぱぱ</option>
-        <option value="mama">まま</option>
-      </select>
+		<p>担当者:
+			<select th:field="*{account}" required>
+				<option value="ぱぱ" th:selected="${todo.account=='ぱぱ'}">ぱぱ</option>
+				<option value="まま" th:selected="${todo.account=='まま'}">まま</option>
+			</select>
+		</p>
 
-      <!-- ③タイトル -->
-      <label for="title">タイトル</label>
-      <input type="text" id="title" maxlength="20" required>
+		<p>カテゴリ:
+			<select name="category.id">
+				<option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"
+					th:selected="${todo.category != null ? cat.id == todo.category.id : false}">
+				</option>
+			</select>
+		</p>
 
-      <!-- ④タグ -->
-      <label>タグ</label>
-      <div class="tag-section">
-        <button type="button" class="tag-btn">家事</button>
-        <button type="button" class="tag-btn">仕事</button>
-        <button type="button" class="tag-btn">育児</button>
-        <input type="text" id="newTag" placeholder="＋新規タグ">
-      </div>
-      <a href="category.html" class="link-manage">▶ カテゴリ管理へ</a>
+		<p>期限日: <input type="date" th:field="*{dueDateTime}" required /></p>
+		<p>完了: <input type="checkbox" th:field="*{completed}" /></p>
 
-      <!-- ⑤カラー -->
-      <label for="color">カラー</label>
-      <input type="color" id="color" value="#ffcc00">
+		<button type="submit">更新</button>
+	</form>
 
-      <!-- ⑥メモ -->
-      <label for="memo">メモ</label>
-      <textarea id="memo" rows="3"></textarea>
+	<p><a th:href="@{/todos}">戻る</a></p>
 
-      <!-- ボタン -->
-      <div class="form-actions">
-        <button type="submit" class="btn primary">更新</button>
-        <button type="button" class="btn danger" id="deleteBtn">削除</button>
-        <a href="index.html" class="btn secondary">キャンセル</a>
-      </div>
-    </form>
-  </main>
-
-  <script src="js/todo-edit.js"></script>
+	<script src="js/todo-new.js"></script>
 </body>
+
 </html>

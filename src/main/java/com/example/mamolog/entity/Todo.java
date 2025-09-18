@@ -12,6 +12,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
 @Table(name = "todos")
@@ -32,6 +34,8 @@ public class Todo {
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "category_id")	// 外部キー名（todosテーブルにcategory_idカラムが作成）
+	@ToString.Exclude			// Entityの双方向参照を無効化のため
+	@EqualsAndHashCode.Exclude	// Entityの双方向参照を無効化のため
 	private Category category;
 	
 	@Column(name = "due_date_time", nullable = false)

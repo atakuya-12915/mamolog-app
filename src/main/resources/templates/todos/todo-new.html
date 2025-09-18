@@ -1,69 +1,58 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8">
-  <title>新規タスク作成</title>
-  <link rel="stylesheet" href="css/styles.css">
-  <link rel="stylesheet" href="css/todo-new.css">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Todo新規作成</title>
+  <!-- static/css/style.css を読み込む想定 -->
+  <link rel="stylesheet" th:href="@{/css/style.css}" />
+  <link rel="stylesheet" th:href="@{/css/category.css}" />
 </head>
 <body>
-  <!-- ヘッダー共通 -->
-  <header>
-    <h1>ママログ - 新規タスク</h1>
-    <nav>
-      <a href="index.html">Todo</a>
-      <a href="#">日記</a>
-      <a href="#">カレンダー</a>
-      <a href="#">マイページ</a>
-    </nav>
-  </header>
+<h1>新しいTodoを作成</h1>
 
-  <main class="form-container">
-    <h2>新規タスク作成</h2>
-    <form id="taskForm">
-      <!-- ①期限 -->
-      <label for="deadline">期限</label>
-      <input type="date" id="deadline" name="deadline" required>
-      <input type="time" id="time" name="time" required>
+<form th:action="@{/todos}" th:object="${todo}" method="post">
+  <p>タイトル: <input type="text" th:field="*{title}" required/></p>
+  <p>メモ: <input type="text" th:field="*{memo}"/></p>
+  <p>担当者:
+    <select th:field="*{account}" required>
+      <option value="ぱぱ">ぱぱ</option>
+      <option value="まま">まま</option>
+    </select>
+  </p>
 
-      <!-- ②担当者 -->
-      <label for="assignee">担当者</label>
-      <select id="assignee" name="assignee">
-        <option value="papa">ぱぱ</option>
-        <option value="mama">まま</option>
-      </select>
+  <!-- カテゴリ：注意 -> name="categoryId" にしてサーバー側で受け取る -->
+  <p>カテゴリ:
+    <select id="categorySelect" name="category" required>
+      <option value="" disabled selected>選択してください</option>
+      <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+    </select>
+    <!-- モーダルを開くボタン -->
+    <button type="button" id="openModal">＋ カテゴリ追加</button>
+  </p>
 
-      <!-- ③タイトル -->
-      <label for="title">タイトル</label>
-      <input type="text" id="title" name="title" maxlength="20" placeholder="例：買い物に行く" required>
+  <p>期限日: <input type="date" th:field="*{dueDateTime}" required/></p>
+  <button type="submit">作成</button>
+</form>
 
-      <!-- ④タグ -->
-      <label>タグ</label>
-      <div class="tag-section">
-        <button type="button" class="tag-btn">家事</button>
-        <button type="button" class="tag-btn">仕事</button>
-        <button type="button" class="tag-btn">育児</button>
-        <input type="text" id="newTag" placeholder="＋新規タグ">
-      </div>
-      <!-- カテゴリ管理ページリンク -->
-      <a href="category.html" class="link-manage">▶ カテゴリ管理へ</a>
+<p><a th:href="@{/todos}">戻る</a></p>
 
-      <!-- ⑤カラー -->
-      <label for="color">カラー</label>
-      <input type="color" id="color" name="color" value="#ffcc00">
-
-      <!-- ⑥メモ -->
-      <label for="memo">メモ</label>
-      <textarea id="memo" name="memo" rows="3"></textarea>
-
-      <!-- ボタン -->
-      <div class="form-actions">
-        <button type="submit" class="btn primary">登録</button>
-        <a href="index.html" class="btn secondary">キャンセル</a>
+<!-- カテゴリ追加モーダル（最初は非表示） -->
+<div id="categoryModal" class="modal" style="display:none;">
+  <div class="modal-content">
+    <span id="closeModal" class="close">&times;</span>
+    <h2>カテゴリを追加</h2>
+    <form id="categoryForm">
+      <input type="text" id="newCategoryName" placeholder="カテゴリ名" required />
+      <input type="color" id="newCategoryColor" value="#ffcc00" />
+      <div style="margin-top:12px;">
+        <button type="submit">追加</button>
+        <button type="button" id="cancelCategory">キャンセル</button>
       </div>
     </form>
-  </main>
+  </div>
+</div>
 
-  <script src="js/todo-new.js"></script>
+<script th:src="@{/js/category.js}"></script>
 </body>
 </html>

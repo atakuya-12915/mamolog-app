@@ -24,15 +24,15 @@ public class HomeController {
 		LocalDate today = LocalDate.now(); // 今日の日付を取得
 
 		// 今日の未完了タスク一覧を取得
-		List<Todo> todoList = todoRepository.findByCompletedFalseAndDueDateTimeOrderByIdAsc(today);
+		List<Todo> todoList = todoRepository.findByCompletedFalseAndDueDateTimeOrderByDueDateTimeAsc(today);
+
 		
 		// 今日の完了タスク件数
 		long completedCount = todoRepository.countByCompletedTrueAndDueDateTime(today); 
 		
 		// 今日の完了タスク一覧（確認用）
-		List<Todo> completedList = todoRepository.findByCompletedFalseAndDueDateTimeOrderByIdAsc(today);
+		List<Todo> completedList = todoRepository.findByCompletedTrueAndDueDateTimeOrderByDueDateTimeAsc(today);
 
-		// Model に格納して View に渡す
 		model.addAttribute("todoList", todoList);
 		model.addAttribute("completedCount", completedCount);
 		model.addAttribute("completedList" ,completedList);

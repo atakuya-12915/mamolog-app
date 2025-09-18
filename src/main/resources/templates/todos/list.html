@@ -1,19 +1,38 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <link rel="stylesheet" href="css/styles.css">
-  <title>まもログ | 今日のやること</title>
-  </head>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Todo一覧</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
 <body>
-  <h1>今日のやること</h1>
-  <div class="summary">残り <span id="remaining">0</span> 件</div>
-  
-  <div class="task-list" id="taskList">
-    <!-- JSでタスクを挿入 -->
-    
-  </div>
-  <p class="summary"><a href="index.html">Home</a></p>
-  <script src="js/app.js"></script>
+<h1>今日のTodo</h1>
+
+<p>未完了: <span th:text="${incompleteCount}">0</span> / 完了: <span th:text="${completedCount}">0</span></p>
+
+<table border="1">
+  <tr>
+    <th>タイトル</th>
+    <th>カテゴリ</th>
+    <th>担当者</th>
+    <th>完了</th>
+    <th>編集</th>
+  </tr>
+
+  <tr th:each="todo : ${todos}">
+    <td th:text="${todo.title}">タイトル</td>
+    <td th:text="${todo.category != null ? todo.category.name : '未設定'}">カテゴリ</td>
+    <td th:text="${todo.account}">担当者</td>
+    <td th:text="${todo.completed ? '済' : '未'}">完了</td>
+    <td>
+      <a th:href="@{/todos/{id}/edit(id=${todo.id})}">編集</a>
+      |
+      <a th:href="@{/todos/{id}/toggle(id=${todo.id})}">完了切替</a>
+    </td>
+  </tr>
+</table>
+
+<p><a th:href="@{/todos/new}">新規作成</a></p>
 </body>
 </html>

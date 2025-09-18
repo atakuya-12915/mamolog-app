@@ -31,108 +31,6 @@ body{
 .tab{padding:8px 12px;border-radius:18px;background:#fff;border:1px solid rgba(0,0,0,0.04);text-decoration:none;color:var(--muted)}
 .tab.active{background:var(--accent-2);border-color:var(--accent);color:var(--text)}
 
-.today-tasks h2 {
-    font-size: 1.5em;
-    margin-bottom: 10px;
-}
-
-.task-count {
-    background-color: #ff6b6b;
-    color: white;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 0.8em;
-    margin-left: 10px;
-}
-
-ul {
-    list-style: none;
-    padding-left: 0;
-}
-
-li {
-    padding: 5px 0;
-    border-bottom: 1px solid #eee;
-}
-
-.completed-tasks details summary {
-    cursor: pointer;
-    padding: 8px;
-    color: var(--muted);
-    font-size: 14px;
-    list-style: none;
-}
-.completed-tasks details[open] summary {
-    color: var(--accent);
-}
-
-
-.completed-tasks {
-    margin-top: 30px;
-}
-
-.completed-tasks button {
-    cursor: pointer;
-    padding: 5px 10px;
-    border: none;
-    background-color: #4caf50;
-    color: white;
-    border-radius: 5px;
-}
-
-.completed-tasks button:hover {
-    background-color: #45a049;
-}
-
-.hidden {
-    display: none;
-}
-
-#completedList li {
-    padding-left: 10px;
-    color: #555;
-}
-
- /* タブ風の見た目 */
-.tab {display: inline-block;margin-right: 10px;padding: 5px 10px;border: 1px solid #ccc;border-bottom: none;cursor: pointer;background-color: #eee;}
-.tab.active {background-color: #fff;font-weight: bold;}
-.tab-content {border: 1px solid #ccc;padding: 10px;}
-
-/* ヘッダー */
-.todo-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.todo-header h1{margin:0;color:var(--accent);font-size:20px}
-.remaining{color:var(--muted)}
-
-/* サイドメニュー */
-.menu-btn {
-  font-size: 1.5rem;
-  background: transparent;
-  border: none;
-  color: #ffb199;
-  cursor: pointer;
-}
-
-.side-menu {
-  position: fixed;
-  top: 0; left: -220px;
-  width: 200px;
-  height: 100%;
-  background: var(--accent-light);
-  box-shadow: var(--shadow);
-  transition: left 0.3s ease;
-  padding-top: 4rem;
-  z-index: 20;
-}
-.side-menu.active { left: 0; }
-.side-menu ul { list-style: none; padding: 0; }
-.side-menu li { margin: 1rem; }
-.side-menu a { text-decoration: none; color: var(--text); }
-
-
-/* controls */
-.controls{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.controls input[type="search"]{padding:8px 10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);width:220px}
-
 /* タスクリスト */
 .task-list{display:flex;flex-direction:column;gap:12px}
 .task-card{
@@ -142,36 +40,36 @@ li {
 }
 .task-card.done{opacity:0.6;text-decoration:line-through}
 .task-main{display:flex;align-items:center;gap:12px}
-.chk input{display:none}
-.chk .fakebox{width:22px;height:22px;border-radius:6px;border:2px solid rgba(0,0,0,0.12);display:inline-block;vertical-align:middle}
-.chk input:checked + .fakebox{background:var(--accent);border-color:var(--accent)}
 .task-body{min-width:0}
-.task-title a{color:var(--text);text-decoration:none;font-weight:600}
-.task-meta{margin-top:6px;font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center}
-.avatar{width:40px;height:40px;border-radius:50%;background:var(--accent-2);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--text)}
+.task-title{font-weight:600}
+.task-meta{font-size:12px;color:var(--muted)}
+.chk input{display:none}
+.chk .fakebox{width:22px;height:22px;border-radius:6px;border:2px solid rgba(0,0,0,0.12);display:inline-block;vertical-align:middle;cursor:pointer}
+.chk input:checked + .fakebox{background:var(--accent);border-color:var(--accent)}
 
 /* 完了折りたたみ */
-.completed-section summary{cursor:pointer;padding:8px;color:var(--muted);font-size:14px}
-
-/* フォーム */
-.form-container{background:#fff;padding:18px;border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,0.05)}
-.form-row{display:flex;flex-direction:column;margin-bottom:12px}
-.form-row label{font-size:13px;margin-bottom:6px;color:var(--muted)}
-.form-row input[type="text"], .form-row input[type="date"], .form-row textarea, .form-row select{
-  padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06)
+.completed-tasks details summary{
+    cursor:pointer;
+    padding:8px;
+    color: var(--muted);
+    font-size: 14px;
 }
-.assignee-buttons{display:flex;gap:8px}
-.assignee input{margin-right:6px}
-.category-list{display:flex;gap:8px;flex-wrap:wrap}
-.cat-btn{border:1px solid rgba(0,0,0,0.06);padding:6px 10px;border-radius:999px;background:#fff}
-.cat-btn.add{border-style:dashed}
+.completed-tasks details[open] summary{
+    color: var(--accent);
+}
 
-/* ボタン */
-.btn{padding:8px 12px;border-radius:8px;text-decoration:none;display:inline-block}
-.btn-primary{background:var(--accent);color:#fff;border:none}
-.btn-secondary{background:#fff;border:1px solid rgba(0,0,0,0.06)}
-.btn-danger{background:#ff6b6b;color:#fff;border:none}
+/* controls */
+.controls{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.controls input[type="search"]{padding:8px 10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);width:220px}
 
 /* フッター */
 .bottom-nav{display:flex;justify-content:space-around;padding:10px;border-top:1px solid rgba(0,0,0,0.06);background:#fff}
 .bn-item{text-decoration:none;color:var(--muted);font-size:13px}
+
+/* サイドメニュー */
+.menu-btn{font-size:1.5rem;background: transparent;border: none;color: var(--accent);cursor:pointer;}
+.side-menu{position: fixed;top: 0; left: -220px;width: 200px;height: 100%;background: var(--accent-2);padding-top:4rem;transition:left 0.3s ease;}
+.side-menu.active{left:0}
+.side-menu ul{list-style:none;padding:0}
+.side-menu li{margin:1rem}
+.side-menu a{text-decoration:none;color:var(--text);}

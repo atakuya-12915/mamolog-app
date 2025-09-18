@@ -1,36 +1,41 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-  <meta charset="UTF-8">
-  <title>カテゴリ管理</title>
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/category.css">
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>カテゴリ管理</title>
+	<link rel="stylesheet" href="css/style.css" />
+	<link rel="stylesheet" href="css/category.css" />
 </head>
+
 <body>
-  <header>
-    <h1>ママログ - カテゴリ管理</h1>
-    <nav>
-      <a href="index.html">Todo</a>
-      <a href="#">日記</a>
-      <a href="#">カレンダー</a>
-      <a href="#">マイページ</a>
-    </nav>
-  </header>
+	<header>
+		<h1>まもログ - カテゴリ管理</h1>
+		<nav>
+			<a th:href="@{/todos}">Todo</a>
+			<a href="#">日記</a>
+			<a href="#">カレンダー</a>
+			<a href="#">マイページ</a>
+		</nav>
+	</header>
 
-  <main class="form-container">
-    <h2>カテゴリ一覧</h2>
+	<main>
+		<h2>カテゴリ一覧</h2>
+		<ul id="categoryList" class="category-list">
+			<li th:each="cat : ${categories}" th:text="${cat.name}"></li>
+		</ul>
 
-    <ul id="categoryList" class="category-list">
-      <!-- JSでカテゴリを挿入 -->
-    </ul>
-
-    <div class="new-category">
-      <input type="text" id="newCategoryInput" placeholder="新しいカテゴリ名">
-      <input type="color" id="newCategoryColor" value="#ffcc00">
-      <button id="addCategoryBtn" class="btn primary">追加</button>
-    </div>
-  </main>
-
-  <script src="js/category.js"></script>
+		<div class="new-category">
+			<form th:action="@{/categories}" method="post">
+				<input type="text" name="name" placeholder="新しいカテゴリ名" required />
+				<button type="submit" class="btn primary">追加</button>
+			</form>
+		</div>
+	</main>
+	
+	<script href="js/category.js"></script>
+	<script href="js/category-edit.js"></script>	
 </body>
+
 </html>
