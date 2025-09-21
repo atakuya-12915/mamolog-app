@@ -4,46 +4,44 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Todo新規作成</title>
-  <link rel="stylesheet" th:href="@{/css/style.css}" />
-  <link rel="stylesheet" th:href="@{/css/todo-new.css}" />
-  
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/todo-new.css" />
 </head>
 <body>
-<h1>新しいTodoを作成</h1>
+<div class="app-shell">
+  <main class="main-area">
+    <div class="form-container">
+      <h2>新しいTodoを作成</h2>
+      <form th:action="@{/todos}" th:object="${todo}" method="post">
+        <label>タイトル：</label>
+        <input type="text" th:field="*{title}" required>
 
-<form th:action="@{/todos}" th:object="${todo}" method="post">
-    <label>タイトル：</label>
-    <input type="text" th:field="*{title}" required>
-    <br>
+        <label>メモ：</label>
+        <textarea th:field="*{memo}"></textarea>
 
-    <label>メモ：</label>
-    <textarea th:field="*{memo}"></textarea>
-    <br>
+        <label>担当者：</label>
+        <select th:field="*{account}" required>
+          <option value="">選択してください</option>
+          <option value="ぱぱ">ぱぱ</option>
+          <option value="まま">まま</option>
+        </select>
 
-    <label>担当者：</label>
-    <select th:field="*{account}" required>
-        <option value="">選択してください</option>
-        <option value="ぱぱ">ぱぱ</option>
-        <option value="まま">まま</option>
-    </select>
-    <br>
+        <label>期限日：</label>
+        <input type="date" th:field="*{dueDate}">
 
-    <label>期限日：</label>
-    <input type="date" th:field="*{dueDate}">
-    <br>
+        <label>期限時刻：</label>
+        <input type="time" th:field="*{dueTime}" step="60">
 
-    <label>期限時刻：</label>
-    <input type="time" th:field="*{dueTime}" step="60">
-    <br>
+        <label>完了：</label>
+        <input type="checkbox" th:field="*{completed}">
 
-    <label>完了：</label>
-    <input type="checkbox" th:field="*{completed}">
-    <br>
-
-    <button type="submit">登録</button>
-</form>
-
-
-<p><a th:href="@{/todos}">戻る</a></p>
+        <div class="form-actions">
+          <button type="submit">登録</button>
+          <a th:href="@{/todos}" class="edit-link">一覧に戻る</a>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
 </body>
 </html>

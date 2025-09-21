@@ -4,34 +4,46 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Todo一覧</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/list.css">
 </head>
 <body>
-<h1>Todo一覧</h1>
+<div class="app-shell">
+  <main class="main-area">
+    <h2>Todo一覧</h2>
+    <p>未完了: <span th:text="${todoList != null ? todoList.size() : 0}">0</span> / 完了: <span th:text="${completedList != null ? completedList.size() : 0}">0</span></p>
 
-<p>未完了: <span th:text="${todoList != null ? todoList.size() : 0}">0</span> / 完了: <span th:text="${completedList != null ? completedList.size() : 0}">0</span></p>
+    <h3>未完了タスク</h3>
+    <ul class="todo-list vertical">
+      <li th:each="todo : ${todoList}" class="todo-card">
+        <div class="todo-main">
+          <div class="todo-body">
+            <div class="todo-title" th:text="${todo.title}">タイトル</div>
+            <div class="todo-meta" th:text="${todo.memo}">メモ</div>
+            <div class="todo-meta" th:text="${todo.dueDate}">期限</div>
+            <a th:href="@{/todos/{id}/edit(id=${todo.id})}" class="edit-link">編集</a>
+          </div>
+        </div>
+      </li>
+    </ul>
 
-<table border="1">
-  <tr>
-    <th>タイトル</th>
-    <th>メモ</th>
-    <th>完了</th>
-    <th>操作</th>
-  </tr>
+    <h3>完了タスク</h3>
+    <ul class="todo-list vertical">
+      <li th:each="todo : ${completedList}" class="todo-card done">
+        <div class="todo-main">
+          <div class="todo-body">
+            <div class="todo-title" th:text="${todo.title}">タイトル</div>
+            <div class="todo-meta" th:text="${todo.memo}">メモ</div>
+            <div class="todo-meta" th:text="${todo.dueDate}">期限</div>
+            <a th:href="@{/todos/{id}/edit(id=${todo.id})}" class="edit-link">編集</a>
+          </div>
+        </div>
+      </li>
+    </ul>
 
-  <tr th:each="todo : ${todoList}">
-    <td th:text="${todo.title}">タイトル</td>
-    <td th:text="${todo.memo}">メモ</td>
-    <td th:text="${todo.completed ? '済' : '未'}">未</td>
-    <td>
-      <a th:href="@{/todos/{id}/edit(id=${todo.id})}">編集</a>
-      |
-      <a th:href="@{/todos/{id}/toggle(id=${todo.id})}">完了切替</a>
-    </td>
-  </tr>
-</table>
-
-<p><a th:href="@{/todos/new}">新規作成</a></p>
-<p><a href="/home">Homeに戻る</a></p>
+    <p><a th:href="@{/todos/new}" class="edit-link">新規作成</a></p>
+    <p><a href="/home" class="edit-link">Homeに戻る</a></p>
+  </main>
+</div>
 </body>
 </html>
