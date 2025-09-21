@@ -1,6 +1,6 @@
 package com.example.mamolog.controller;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
@@ -19,24 +19,18 @@ public class HomeController {
 		this.todoRepository = todoRepository;
 	}
 
-	@GetMapping("/home") // Home画面(index.html)を表示
+	@GetMapping("/home")
 	public String showHome(Model model) {
-		LocalDate today = LocalDate.now(); // 今日の日付を取得
+		List<Todo> todoList = todoRepository.findByCompleted(false);		// 未完了タスクの取得
+        List<Todo> completedList = todoRepository.findByCompleted(true);	// 完了タスクの取得
+        long remainingCount = todoList.size();							// 未完了タスクの件数
 
-		// 今日の未完了タスク一覧を取得
-		List<Todo> todoList = todoRepository.findByCompletedFalseAndDueDateTimeOrderByDueDateTimeAsc(today);
-
+        // null 安全のため空リストを保証
+        model.addAttribute("todoList", todoList != null ? todoList : new ArrayList<>());
+        model.addAttribute("completedList", completedList != null ? completedList : new ArrayList<>());
 		
-		// 今日の完了タスク件数
-		long completedCount = todoRepository.countByCompletedTrueAndDueDateTime(today); 
-		
-		// 今日の完了タスク一覧（確認用）
-		List<Todo> completedList = todoRepository.findByCompletedTrueAndDueDateTimeOrderByDueDateTimeAsc(today);
+        model.addAttribute("remainingCount" ,remainingCount);
 
-		model.addAttribute("todoList", todoList);
-		model.addAttribute("completedCount", completedCount);
-		model.addAttribute("completedList" ,completedList);
-
-		return "index";
+		return "index";		// /home → index.html
 	}
 }

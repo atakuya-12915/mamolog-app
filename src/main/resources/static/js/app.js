@@ -1,73 +1,28 @@
-// 仮データ
-/* const tasks = [
-  { id: 1, title: "買い物に行く", assignee: "ぱぱ", tag: "家事", due: "今日", done: false },
-  { id: 2, title: "お弁当の仕込み", assignee: "まま", tag: "料理", due: "今日", done: false },
-  { id: 3, title: "保育園の準備", assignee: "まま", tag: "育児", due: "今日", done: true },
-];
+// =========================
+// app.js
+// 役割：
+// - チェックボックスで未完了/完了を切替
+// - DOM上でカードを移動して件数を更新
+// - 「編集」リンクは移動後も常に有効
+// - ハンバーガーメニュー操作
+// =========================
 
-function renderTasks() {
-  const taskList = document.getElementById("taskList");
-  const completedList = document.getElementById("completedList");
-  taskList.innerHTML = "";
-  completedList.innerHTML = "";
-  let remaining = 0;
-
-  tasks.forEach(task => {
-	const card = document.createElement("div");
-	card.className = "task-card" + (task.done ? " done" : "");
-	card.innerHTML = `
-	  <div class="task-main">
-		<input type="checkbox" ${task.done ? "checked" : ""} onchange="toggleTask(${task.id})">
-		<div>
-		  <a href="/todos/edit/${task.id}" class="task-title">${task.title}</a>
-		  <div class="task-meta">${task.assignee} | ${task.tag} | ${task.due}</div>
-		</div>
-	  </div>
-	  <div class="avatar">${task.assignee === "ぱぱ" ? "👨" : "👩"}</div>
-	  <div class="task-actions">
-		<a href="/todos${task.id}/edit" class="btn small">編集</a>
-	  </div>
-	`;
-
-	if (task.done) {
-	  completedList.appendChild(card);
-	} else {
-	  taskList.appendChild(card);
-	  remaining++;
-	}
-  });
-
-  document.getElementById("remainingCount").innerText = remaining;
-}
-
-// タスク完了切り替え
-function toggleTask(id) {
-  const task = tasks.find(t => t.id === id);
-  if (task) {
-	task.done = !task.done;
-	renderTasks();
-  }
-}
-
-renderTasks(); */
-
+// -------------------------
 // ハンバーガーメニュー
+// -------------------------
 const menuToggle = document.querySelector("#menu-toggle");
 const sideMenu = document.querySelector("#side-menu");
 const overlay = document.createElement("div");
 overlay.id = "overlay";
 document.body.appendChild(overlay);
 
-// サイドメニューの開閉
-document.getElementById('menu-toggle').addEventListener('click', function() {
-	document.getElementById('side-menu').classList.toggle('open');
-});
-
+// メニュー開閉
 menuToggle.addEventListener("click", () => {
 	sideMenu.classList.toggle("active");
 	overlay.classList.toggle("active");
 });
 
+// メニュー内リンククリックで閉じる
 document.querySelectorAll(".nav-link").forEach(link => {
 	link.addEventListener("click", e => {
 		const href = link.getAttribute("href");
@@ -77,12 +32,15 @@ document.querySelectorAll(".nav-link").forEach(link => {
 	});
 });
 
+// overlayクリックで閉じる
 overlay.addEventListener("click", () => {
 	sideMenu.classList.remove("active");
 	overlay.classList.remove("active");
 });
 
-// タグボタンクリックで input に反映
+// -------------------------
+// タグボタン選択
+// -------------------------
 const tagBtns = document.querySelectorAll('.tag-btn');
 const tagInput = document.getElementById('tagInput');
 
@@ -98,21 +56,93 @@ tagBtns.forEach(btn => {
 	});
 });
 
-chk.addEventListener("change", async (e) => {
-	const id = e.target.getAttribute("data-id");
+// -------------------------
+// ヘルパー関数
+// -------------------------
+
+// 件数更新
+function updateCounts() {
+	const pendingCountEl = document.getElementById("pending-count");
+	const pendingList = document.getElementById("pending-list");
+	const completedList = document.getElementById("completed-list");
+
+	const pending = pendingList ? pendingList.querySelectorAll(".todo-card").length : 0;
+	const completed = completedList ? completedList.querySelectorAll(".todo-card").length : 0;
+
+	if (pendingCountEl) pendingCountEl.textContent = pending;
+	// 完了件数は見た目でわかるが、必要なら DOM に追加して更新可能
+}
+
+// カード移動（未完了 ↔ 完了）
+function moveCardToList(card, targetList, markDone) {
+	if (!card || !targetList) return;
+	card.classList.toggle("done", !!markDone); // 完了スタイル切替
+	const cb = card.querySelector(".todo-checkbox");
+	if (cb) cb.checked = !!markDone;          // チェック状態反映
+	targetList.appendChild(card);             // DOM移動
+	updateCounts();
+}
+
+// -------------------------
+// チェックボックス切替処理
+// -------------------------
+async function handleToggle(id, card, checked) {
 	try {
-		const response = await fetch(`/todos/${id}/toggle`, { method: "POST" });
-		if (!response.ok) throw new Error("Network response was not ok");
-		const data = await response.json();
-		const card = e.target.closest(".task-card");
-		if (data.completed) {
-			card.classList.add("done");
+		// サーバー側の GET /todos/{id}/toggle を呼ぶ
+		const resp = await fetch(`/todos/${id}/toggle`, { method: "GET" });
+		if (!resp.ok) throw new Error("Network response was not ok");
+
+		const pendingList = document.getElementById("pending-list");
+		const completedList = document.getElementById("completed-list");
+
+		if (checked) {
+			moveCardToList(card, completedList, true);   // 完了に移動
 		} else {
-			card.classList.remove("done");
+			moveCardToList(card, pendingList, false);   // 未完了に戻す
 		}
 	} catch (err) {
-		alert("更新に失敗しました");
-		e.target.checked = !e.target.checked;
 		console.error(err);
+		alert("更新に失敗しました");
+		const cb = card.querySelector(".todo-checkbox");
+		if (cb) cb.checked = !checked; // ロールバック
 	}
+}
+
+// -------------------------
+// DOMロード時イベント
+// -------------------------
+document.addEventListener("DOMContentLoaded", function() {
+	// チェックボックス変更時
+	document.addEventListener("change", function(e) {
+		if (e.target.matches(".todo-checkbox")) {
+			const id = e.target.getAttribute("data-id");
+			const card = e.target.closest(".todo-card");
+			if (!card) return;
+			handleToggle(id, card, e.target.checked);
+		}
+	});
+
+	// 編集リンククリック（イベント委譲）
+	document.addEventListener("click", function(e) {
+		if (e.target.matches(".edit-link")) {
+			e.preventDefault();
+			const url = e.target.getAttribute("href");
+			// 編集画面へ移動
+			window.location.href = url;
+		}
+	});
+
+	// 完了タスクの折りたたみ表示切替
+	const toggleBtn = document.getElementById("toggle-completed-btn");
+	if (toggleBtn) {
+		toggleBtn.addEventListener("click", function() {
+			const completedSection = document.getElementById("completed-list");
+			if (!completedSection) return;
+			completedSection.classList.toggle("hidden");
+			toggleBtn.textContent = completedSection.classList.contains("hidden") ? "表示する" : "非表示にする";
+		});
+	}
+
+	// 初期件数更新
+	updateCounts();
 });

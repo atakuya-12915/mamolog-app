@@ -4,55 +4,46 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Todo新規作成</title>
-  <!-- static/css/style.css を読み込む想定 -->
   <link rel="stylesheet" th:href="@{/css/style.css}" />
-  <link rel="stylesheet" th:href="@{/css/category.css}" />
+  <link rel="stylesheet" th:href="@{/css/todo-new.css}" />
+  
 </head>
 <body>
 <h1>新しいTodoを作成</h1>
 
 <form th:action="@{/todos}" th:object="${todo}" method="post">
-  <p>タイトル: <input type="text" th:field="*{title}" required/></p>
-  <p>メモ: <input type="text" th:field="*{memo}"/></p>
-  <p>担当者:
+    <label>タイトル：</label>
+    <input type="text" th:field="*{title}" required>
+    <br>
+
+    <label>メモ：</label>
+    <textarea th:field="*{memo}"></textarea>
+    <br>
+
+    <label>担当者：</label>
     <select th:field="*{account}" required>
-      <option value="ぱぱ">ぱぱ</option>
-      <option value="まま">まま</option>
+        <option value="">選択してください</option>
+        <option value="ぱぱ">ぱぱ</option>
+        <option value="まま">まま</option>
     </select>
-  </p>
+    <br>
 
-  <!-- カテゴリ：注意 -> name="categoryId" にしてサーバー側で受け取る -->
-  <p>カテゴリ:
-    <select id="categorySelect" name="category" required>
-      <option value="" disabled selected>選択してください</option>
-      <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
-    </select>
-    <!-- モーダルを開くボタン -->
-    <button type="button" id="openModal">＋ カテゴリ追加</button>
-  </p>
+    <label>期限日：</label>
+    <input type="date" th:field="*{dueDate}">
+    <br>
 
-  <p>期限日: <input type="date" th:field="*{dueDateTime}" required/></p>
-  <button type="submit">作成</button>
+    <label>期限時刻：</label>
+    <input type="time" th:field="*{dueTime}" step="60">
+    <br>
+
+    <label>完了：</label>
+    <input type="checkbox" th:field="*{completed}">
+    <br>
+
+    <button type="submit">登録</button>
 </form>
 
+
 <p><a th:href="@{/todos}">戻る</a></p>
-
-<!-- カテゴリ追加モーダル（最初は非表示） -->
-<div id="categoryModal" class="modal" style="display:none;">
-  <div class="modal-content">
-    <span id="closeModal" class="close">&times;</span>
-    <h2>カテゴリを追加</h2>
-    <form id="categoryForm">
-      <input type="text" id="newCategoryName" placeholder="カテゴリ名" required />
-      <input type="color" id="newCategoryColor" value="#ffcc00" />
-      <div style="margin-top:12px;">
-        <button type="submit">追加</button>
-        <button type="button" id="cancelCategory">キャンセル</button>
-      </div>
-    </form>
-  </div>
-</div>
-
-<script th:src="@{/js/category.js}"></script>
 </body>
 </html>

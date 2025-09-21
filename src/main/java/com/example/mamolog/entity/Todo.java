@@ -1,19 +1,18 @@
 package com.example.mamolog.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 @Entity
 @Table(name = "todos")
@@ -22,25 +21,37 @@ public class Todo {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	private Long id;						// 自動採番ID
 	
 	@Column(nullable = false)
-	private String title;		// タスクのタイトル（必須）
+	private String title;					// タスク名
 	
-	private String memo;		// タスクのメモ（任意）
+	private String memo;					// タスクのメモ（任意）
+	private String account;					// 担当者（ぱぱ／まま）
 
-	@Column(nullable = false)
-	private String account;		// 担当者（ぱぱ or まま）
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "category_id")	// 外部キー名（todosテーブルにcategory_idカラムが作成）
-	@ToString.Exclude			// Entityの双方向参照を無効化のため
-	@EqualsAndHashCode.Exclude	// Entityの双方向参照を無効化のため
-	private Category category;
-	
-	@Column(name = "due_date_time", nullable = false)
-	private LocalDate dueDateTime; 		// 期限日時（＝「今日のやること」の基準）
-	
 	@Column(nullable = false)
 	private boolean completed = false;		// 完了フラグ（初期値はfalse）
+	
+	private LocalDate dueDate; 				// 期限日
+    private LocalTime dueTime; 				// 期限時刻
+	
+	// 作成日時
+	@Column(name = "created_at", nullable = false, updatable = false)
+	private LocalDateTime createdAt;
+	
+	// 更新日時
+	@Column(name = "updated_at", nullable = false)
+	private LocalDateTime updatedAt;
+	
+	// 保存時の自動設定（JPA/Hibernate でエンティティの作成・更新時に自動で日時をセットする処理/Java側で制御）
+	@PrePersist								// 新規作成時の処理
+    protected void onCreate() {				// エンティティが最初にDBに保存される前に呼ばれるメソッド
+        this.createdAt = LocalDateTime.now();	// 作成日時をセット
+        this.updatedAt = createdAt;				// 作成日時と同じ値で初期化
+    }
+
+    @PreUpdate								// 更新時の処理
+    protected void onUpdate() {				// エンティティが 更新される直前 に呼ばれるメソッド
+        this.updatedAt = LocalDateTime.now();	// 現在日時をセット
+    }
 }

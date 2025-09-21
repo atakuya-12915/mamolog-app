@@ -4,27 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Todo一覧</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-<h1>今日のTodo</h1>
+<h1>Todo一覧</h1>
 
-<p>未完了: <span th:text="${incompleteCount}">0</span> / 完了: <span th:text="${completedCount}">0</span></p>
+<p>未完了: <span th:text="${todoList != null ? todoList.size() : 0}">0</span> / 完了: <span th:text="${completedList != null ? completedList.size() : 0}">0</span></p>
 
 <table border="1">
   <tr>
     <th>タイトル</th>
-    <th>カテゴリ</th>
-    <th>担当者</th>
+    <th>メモ</th>
     <th>完了</th>
-    <th>編集</th>
+    <th>操作</th>
   </tr>
 
-  <tr th:each="todo : ${todos}">
+  <tr th:each="todo : ${todoList}">
     <td th:text="${todo.title}">タイトル</td>
-    <td th:text="${todo.category != null ? todo.category.name : '未設定'}">カテゴリ</td>
-    <td th:text="${todo.account}">担当者</td>
-    <td th:text="${todo.completed ? '済' : '未'}">完了</td>
+    <td th:text="${todo.memo}">メモ</td>
+    <td th:text="${todo.completed ? '済' : '未'}">未</td>
     <td>
       <a th:href="@{/todos/{id}/edit(id=${todo.id})}">編集</a>
       |
@@ -34,5 +32,6 @@
 </table>
 
 <p><a th:href="@{/todos/new}">新規作成</a></p>
+<p><a href="/home">Homeに戻る</a></p>
 </body>
 </html>
