@@ -1,47 +1,64 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Todo新規作成</title>
-  <link rel="stylesheet" href="/css/styles.css" />
-  <link rel="stylesheet" href="/css/todo-new.css" />
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>Todo新規作成</title>
+	<link rel="stylesheet" href="/css/styles.css" />
+	<link rel="stylesheet" href="/css/todo-new.css" />
 </head>
+
 <body>
-<div class="app-shell">
-  <main class="main-area">
-    <div class="form-container">
-      <h2>新しいTodoを作成</h2>
-      <form th:action="@{/todos}" th:object="${todo}" method="post">
-        <label>タイトル：</label>
-        <input type="text" th:field="*{title}" required>
+	<div class="app-shell">
+		<main class="main-area">
+			<div class="form-container">
+				<h2>新しいTodoを作成</h2>
+				<form th:action="@{/todos}" th:object="${todo}" method="post">
+					<label>タイトル：</label>
+					<input type="text" th:field="*{title}" required>
 
-        <label>メモ：</label>
-        <textarea th:field="*{memo}"></textarea>
+					<label>メモ：</label>
+					<textarea th:field="*{memo}"></textarea>
 
-        <label>担当者：</label>
-        <select th:field="*{account}" required>
-          <option value="">選択してください</option>
-          <option value="ぱぱ" th:selected="${todo.account == 'ぱぱ'}">ぱぱ</option>
-          <option value="まま" th:selected="${todo.account == 'まま'}">まま</option>
-        </select>
+					<label>担当者：</label>
+					<select th:field="*{account}" required>
+						<option value="">選択してください</option>
+						<option value="ぱぱ" th:selected="${todo.account == 'ぱぱ'}">ぱぱ</option>
+						<option value="まま" th:selected="${todo.account == 'まま'}">まま</option>
+					</select>
 
-        <label>期限日：</label>
-        <input type="date" th:field="*{dueDate}">
+					<div class="form-group">
+						<label>カテゴリ</label>
+						<select name="category" th:field="*{category}" required>
+							<option value="">選択してください</option>
+							<option th:each="category : ${categories}" 
+									th:value="${category}"
+									th:text="${category.name}"
+									th:selected="${category == todo.category}">
+							</option>
+						</select>
+					</div>
 
-        <label>期限時刻：</label>
-        <input type="time" th:field="*{dueTime}" step="60">
+					<label>期限日：</label>
+					<input type="date" th:field="*{dueDate}">
 
-        <label>完了：</label>
-        <input type="checkbox" th:field="*{completed}">
+					<label>期限時刻：</label>
+					<input type="time" th:field="*{dueTime}" step="60">
 
-        <div class="form-actions">
-          <button type="submit">登録</button>
-          <a th:href="@{/todos}" class="edit-link">一覧に戻る</a>
-        </div>
-      </form>
-    </div>
-  </main>
-</div>
+					<label>完了：</label>
+					<input type="checkbox" th:field="*{completed}">
+
+					<div class="form-actions">
+						<button type="submit">登録</button>
+						<!-- 重複アラート -->
+						 <p id="warning" style="color:red; display:none;">同じ日の同名タスクがあります！</p>
+						<a th:href="@{/todos}" class="edit-link">一覧に戻る</a>
+					</div>
+				</form>
+			</div>
+		</main>
+	</div>
 </body>
+
 </html>

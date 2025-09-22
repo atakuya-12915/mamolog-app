@@ -29,6 +29,10 @@
 								</span>
 							</div>
 							<div class="todo-meta" th:text="${todo.memo}">メモ</div>
+							<!-- カテゴリ表示（存在する場合のみ） -->
+							<div class="todo-meta" th:if="${todo.category != null}">
+								カテゴリ: <span th:text="${todo.category.name}">カテゴリ名</span>
+							</div>
 							<div class="todo-meta" th:text="${todo.dueDate}">期限</div>
 							<a th:href="@{/todos/{id}/edit(id=${todo.id})}" class="edit-link">編集</a>
 						</div>
@@ -49,6 +53,10 @@
 								</span>
 							</div>
 							<div class="todo-meta" th:text="${todo.memo}">メモ</div>
+							<!-- カテゴリ表示（存在する場合のみ） -->
+							<div class="todo-meta" th:if="${todo.category != null}">
+								カテゴリ: <span th:text="${todo.category.name}">カテゴリ名</span>
+							</div>
 							<div class="todo-meta" th:if="${todo.dueDate != null}">
 								期限:
 								<span th:text="${todo.dueDate}">yyyy-MM-dd</span>

@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.mamolog.entity.Category;
 import com.example.mamolog.entity.Todo;
+import com.example.mamolog.repository.CategoryRepository;
 import com.example.mamolog.repository.TodoRepository;
 
 @Controller
@@ -20,9 +22,11 @@ import com.example.mamolog.repository.TodoRepository;
 public class TodoController {
 
     private final TodoRepository todoRepository;      			// TodoのDB操作用
+    private final CategoryRepository categoryRepository;		// CategoryのDB操作用
 
-    public TodoController(TodoRepository todoRepository) {		// リポジトリをDI
+    public TodoController(TodoRepository todoRepository, CategoryRepository categoryRepository) {		// リポジトリをDI
         this.todoRepository = todoRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     // ────────── 一覧表示 ──────────
@@ -41,9 +45,12 @@ public class TodoController {
     // ────────── 新規作成フォーム表示 ──────────
     @GetMapping("/new")
     public String newTodoForm(Model model) {
-    	Todo todo = new Todo();
-    	todo.setAccount("ぱぱ");					// デフォルトで担当者「ぱぱ」をセット
-        model.addAttribute("todo", todo);		// 空のTodoオブジェクトをフォームにバインド
+    	model.addAttribute("todo", new Todo());		// 新規Todo用の空オブジェクトをフォームにバインド
+    	
+    	// カテゴリ一覧を取得して Model に追加
+    	List<Category> categories = categoryRepository.findAll();
+    	model.addAttribute("categories", categories);    	
+        
         return "todos/todo-new"; 				// 新規作成画面
     }
 
@@ -61,7 +68,13 @@ public class TodoController {
     public String showEditForm(@PathVariable Long id, Model model) {
         Todo existing = todoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("無効なTodo IDです:" + id));
+       
         model.addAttribute("todo", existing);           // 編集対象をViewへ渡す
+        
+        // カテゴリも渡す（ドロップダウン用）
+        List<Category> categories = categoryRepository.findAll();
+        model.addAttribute("categories", categories);
+        
         return "todos/todo-edit"; 						// 編集画面
     }
 
@@ -70,25 +83,31 @@ public class TodoController {
     public String updateTodoForm(@PathVariable Long id,
     							 @ModelAttribute Todo todo,
     							 RedirectAttributes redirectAttributes) {
-        Todo existing = todoRepository.findById(id)
+        // DBから既存Todoを取得
+    	Todo existing = todoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("無効なTodo IDです:" + id));
 
-        // フィールドをまとめて更新（フォームから受け取ったtodoの値をexistingにsetterで上書き）
+        // フィールドを上書き（フォームから受け取ったtodoの値をexistingにsetterで上書き）
         existing.setTitle(todo.getTitle());										// タスク名
         existing.setMemo(todo.getMemo());										// メモ
         existing.setAccount(todo.getAccount());									// 担当者
+        existing.setDueDate(todo.getDueDate());									// 更新日
+        existing.setDueTime(todo.getDueTime());									// 更新時間
         existing.setCompleted(todo.isCompleted());								// 完了タスク
+        existing.setCategory(todo.getCategory()); 								// カテゴリも更新
 
         todoRepository.save(existing); 											// DBに保存
-        
         redirectAttributes.addFlashAttribute("message", "Todoを更新しました"); 	// 更新メッセージ
+        
         return "redirect:/todos"; 												// 一覧へリダイレクト
     }
 
     // ────────── 削除処理 ──────────
     @PostMapping("/{id}/delete")
     public String deleteTodo(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        Todo existing = todoRepository.findById(id)
+        
+    	// DBから既存Todoを取得
+    	Todo existing = todoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("無効なTodo IDです:" + id));
         
         todoRepository.delete(existing); 										// 削除

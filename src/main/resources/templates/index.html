@@ -52,7 +52,6 @@
 
 					<!-- 未完了タスクリスト（縦並び） -->
 					<section class="todo-list vertical" id="pending-list">
-						<!-- 未完了は controller 側で findByCompleted(false) -> todoList -->
 						<li th:each="todo : ${todoList}" class="todo-card" th:attr="data-id=${todo.id}">
 							<div class="todo-main">
 								<label class="chk">
@@ -70,6 +69,10 @@
 									</div>
 
 									<div class="todo-meta" th:text="${todo.memo}">メモ</div>
+									<!-- カテゴリ表示（存在する場合のみ） -->
+									<div class="todo-meta" th:if="${todo.category != null}">
+										カテゴリ: <span th:text="${todo.category.name}">カテゴリ名</span>
+									</div>
 									<!-- 期限表示（存在する場合のみ） -->
 									<div class="todo-meta" th:if="${todo.dueDate != null}">
 										期限:
@@ -112,6 +115,10 @@
 											</span>
 										</div>
 										<div class="todo-meta" th:text="${todo.memo}">メモ</div>
+										<!-- カテゴリ表示（存在する場合のみ） -->
+										<div class="todo-meta" th:if="${todo.category != null}">
+											カテゴリ: <span th:text="${todo.category.name}">カテゴリ名</span>
+										</div>
 										<div class="todo-meta" th:if="${todo.dueDate != null}">
 											期限:
 											<span th:text="${todo.dueDate}">yyyy-MM-dd</span>

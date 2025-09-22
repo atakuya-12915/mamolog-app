@@ -9,6 +9,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -34,7 +36,11 @@ public class Todo {
 	
 	private LocalDate dueDate; 				// 期限日
     private LocalTime dueTime; 				// 期限時刻
-	
+
+	@ManyToOne
+	@JoinColumn(name = "category_id", referencedColumnName = "id", nullable = true)
+	private Category category;				// カテゴリ（未選択可）※外部キーで管理
+    
 	// 作成日時
 	@Column(name = "created_at", nullable = false, updatable = false)
 	private LocalDateTime createdAt;
