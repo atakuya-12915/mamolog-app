@@ -52,6 +52,25 @@ body{
 .chk .fakebox{width:22px;height:22px;border-radius:6px;border:2px solid rgba(0,0,0,0.12);display:inline-block;vertical-align:middle;cursor:pointer}
 .chk input:checked + .fakebox{background:var(--accent);border-color:var(--accent)}
 
+/* 担当者バッチ（色分け） */
+.assignee {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #fff;
+}
+
+.assignee.papa {
+  background-color: #2b80ff; /* グリーン系 */
+}
+
+.assignee.mama {
+  background-color: #ff8ca0; /* ピンク系 */
+}
+
 /* 期限管理（色分け） */
 .todo-card.overdue {
     background-color: #ffcccc; /* 過ぎた期限は赤 */

@@ -22,8 +22,8 @@
         <label>担当者：</label>
         <select th:field="*{account}" required>
           <option value="">選択してください</option>
-          <option value="ぱぱ">ぱぱ</option>
-          <option value="まま">まま</option>
+          <option value="ぱぱ" th:selected="${todo.account == 'ぱぱ'}">ぱぱ</option>
+          <option value="まま" th:selected="${todo.account == 'まま'}">まま</option>
         </select>
 
         <label>期限日：</label>

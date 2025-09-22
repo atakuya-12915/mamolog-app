@@ -41,8 +41,10 @@ public class TodoController {
     // ────────── 新規作成フォーム表示 ──────────
     @GetMapping("/new")
     public String newTodoForm(Model model) {
-        model.addAttribute("todo", new Todo());		// 空のTodoオブジェクトをフォームにバインド
-        return "todos/todo-new"; 					// 新規作成画面
+    	Todo todo = new Todo();
+    	todo.setAccount("ぱぱ");					// デフォルトで担当者「ぱぱ」をセット
+        model.addAttribute("todo", todo);		// 空のTodoオブジェクトをフォームにバインド
+        return "todos/todo-new"; 				// 新規作成画面
     }
 
     // ────────── 新規作成保存 ──────────

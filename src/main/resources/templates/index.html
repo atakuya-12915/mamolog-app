@@ -61,7 +61,14 @@
 								</label>
 
 								<div class="todo-body">
-									<div class="todo-title" th:text="${todo.title}">タイトル</div>
+									<div class="todo-title">
+										<span th:text="${todo.title}">タイトル</span>
+										<!-- 担当者バッジ -->
+										<span class="assignee" th:text="${todo.account}"
+											th:classappend="${todo.account == 'ぱぱ'} ? ' papa' : ' mama'">
+										</span>
+									</div>
+
 									<div class="todo-meta" th:text="${todo.memo}">メモ</div>
 									<!-- 期限表示（存在する場合のみ） -->
 									<div class="todo-meta" th:if="${todo.dueDate != null}">
@@ -97,7 +104,13 @@
 									</label>
 
 									<div class="todo-body">
-										<div class="todo-title" th:text="${todo.title}">タイトル</div>
+										<div class="todo-title">
+											<span th:text="${todo.title}">タイトル</span>
+											<!-- 担当者バッジ -->
+											<span class="assignee" th:text="${todo.account}"
+												th:classappend="${todo.account == 'ぱぱ'} ? ' papa' : ' mama'">
+											</span>
+										</div>
 										<div class="todo-meta" th:text="${todo.memo}">メモ</div>
 										<div class="todo-meta" th:if="${todo.dueDate != null}">
 											期限:
