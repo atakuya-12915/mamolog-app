@@ -2,63 +2,72 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width,initial-scale=1" />
-	<title>Todo新規作成</title>
-	<link rel="stylesheet" href="/css/styles.css" />
-	<link rel="stylesheet" href="/css/todo-new.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Todo新規作成</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/todo-new.css" />
 </head>
 
 <body>
-	<div class="app-shell">
-		<main class="main-area">
-			<div class="form-container">
-				<h2>新しいTodoを作成</h2>
-				<form th:action="@{/todos}" th:object="${todo}" method="post">
-					<label>タイトル：</label>
-					<input type="text" th:field="*{title}" required>
+<div class="app-shell">
+    <main class="main-area">
+        <div class="form-container">
+            <h2>新しいTodoを作成</h2>
+            <form th:action="@{/todos}" th:object="${todo}" method="post">
 
-					<label>メモ：</label>
-					<textarea th:field="*{memo}"></textarea>
+                <!-- タイトル -->
+                <label>タイトル：</label>
+                <input type="text" th:field="*{title}" required>
 
-					<label>担当者：</label>
-					<select th:field="*{account}" required>
-						<option value="">選択してください</option>
-						<option value="ぱぱ" th:selected="${todo.account == 'ぱぱ'}">ぱぱ</option>
-						<option value="まま" th:selected="${todo.account == 'まま'}">まま</option>
-					</select>
+                <!-- メモ -->
+                <label>メモ：</label>
+                <textarea th:field="*{memo}"></textarea>
 
-					<div class="form-group">
-						<label>カテゴリ</label>
-						<select name="category" th:field="*{category}" required>
-							<option value="">選択してください</option>
-							<option th:each="category : ${categories}" 
-									th:value="${category}"
-									th:text="${category.name}"
-									th:selected="${category == todo.category}">
-							</option>
-						</select>
-					</div>
+                <!-- 担当者 -->
+                <label>担当者：</label>
+                <select th:field="*{account}" required>
+                    <option value="">選択してください</option>
+                    <option value="ぱぱ" th:selected="${todo.account == 'ぱぱ'}">ぱぱ</option>
+                    <option value="まま" th:selected="${todo.account == 'まま'}">まま</option>
+                </select>
 
-					<label>期限日：</label>
-					<input type="date" th:field="*{dueDate}">
+                <!-- カテゴリ -->
+                <div class="form-group">
+                    <label>カテゴリ</label>
+                    <!-- 既存カテゴリ選択 -->
+                    <select th:field="*{category}" >
+                        <option value="">選択してください</option>
+                        <option th:each="category : ${categories}"
+                                th:value="${category}"
+                                th:text="${category.name}"
+                                th:selected="${category == todo.category}">
+                        </option>
+                    </select>
 
-					<label>期限時刻：</label>
-					<input type="time" th:field="*{dueTime}" step="60">
+                    <!-- 新規カテゴリ入力 -->
+                    <input type="text" name="newCategoryName" placeholder="新しいカテゴリを追加">
+                </div>
 
-					<label>完了：</label>
-					<input type="checkbox" th:field="*{completed}">
+                <!-- 期限 -->
+                <label>期限日：</label>
+                <input type="date" th:field="*{dueDate}">
 
-					<div class="form-actions">
-						<button type="submit">登録</button>
-						<!-- 重複アラート -->
-						 <p id="warning" style="color:red; display:none;">同じ日の同名タスクがあります！</p>
-						<a th:href="@{/todos}" class="edit-link">一覧に戻る</a>
-					</div>
-				</form>
-			</div>
-		</main>
-	</div>
+                <label>期限時刻：</label>
+                <input type="time" th:field="*{dueTime}" step="60">
+
+                <!-- 完了 -->
+                <label>完了：</label>
+                <input type="checkbox" th:field="*{completed}">
+
+                <div class="form-actions">
+                    <button type="submit">登録</button>
+                    <a th:href="@{/todos}" class="edit-link">一覧に戻る</a>
+                </div>
+
+            </form>
+        </div>
+    </main>
+</div>
 </body>
-
 </html>
