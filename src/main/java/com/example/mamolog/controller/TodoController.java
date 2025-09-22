@@ -31,7 +31,7 @@ public class TodoController {
         List<Todo> todoList = todoRepository.findByCompleted(false);		// 未完了タスクの取得
         List<Todo> completedList = todoRepository.findByCompleted(true);	// 完了タスクの取得
 
-        // null 安全のため空リストを保証
+        // null安全対策・空リスト保証
         model.addAttribute("todoList", todoList != null ? todoList : new ArrayList<>());
         model.addAttribute("completedList", completedList != null ? completedList : new ArrayList<>());
         
@@ -71,7 +71,7 @@ public class TodoController {
         Todo existing = todoRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("無効なTodo IDです:" + id));
 
-        // フィールドをまとめて更新
+        // フィールドをまとめて更新（フォームから受け取ったtodoの値をexistingにsetterで上書き）
         existing.setTitle(todo.getTitle());										// タスク名
         existing.setMemo(todo.getMemo());										// メモ
         existing.setAccount(todo.getAccount());									// 担当者

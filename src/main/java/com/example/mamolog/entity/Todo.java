@@ -44,14 +44,14 @@ public class Todo {
 	private LocalDateTime updatedAt;
 	
 	// 保存時の自動設定（JPA/Hibernate でエンティティの作成・更新時に自動で日時をセットする処理/Java側で制御）
-	@PrePersist								// 新規作成時の処理
-    protected void onCreate() {				// エンティティが最初にDBに保存される前に呼ばれるメソッド
+	@PrePersist									// 新規作成時の処理
+    protected void onCreate() {					// エンティティが最初にDBに保存される前に呼ばれるメソッド
         this.createdAt = LocalDateTime.now();	// 作成日時をセット
         this.updatedAt = createdAt;				// 作成日時と同じ値で初期化
     }
 
-    @PreUpdate								// 更新時の処理
-    protected void onUpdate() {				// エンティティが 更新される直前 に呼ばれるメソッド
+    @PreUpdate									// 更新時の処理
+    protected void onUpdate() {					// エンティティが 更新される直前 に呼ばれるメソッド
         this.updatedAt = LocalDateTime.now();	// 現在日時をセット
     }
 }
