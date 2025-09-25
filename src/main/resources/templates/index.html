@@ -1,143 +1,190 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-
 <head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width,initial-scale=1" />
-	<title>まもログ | Home</title>
-	<link rel="stylesheet" href="/css/styles.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>まもログ | Home</title>
+    <link rel="stylesheet" href="/css/styles.css" />
 </head>
 
 <body>
-	<div class="app-shell">
-		<!-- ヘッダー -->
-		<header class="topbar">
-			<button id="menu-toggle" class="menu-btn">☰</button>
-			<nav id="side-menu" class="side-menu">
-				<ul>
-					<li><a href="#" class="nav-link">ログイン</a></li>
-					<li><a href="/todos/new" class="nav-link">Todo作成</a></li>
-					<li><a href="/diary/new" class="nav-link">日記登録</a></li>
-					<li><a href="#" class="nav-link">レポート参照</a></li>
-					<li><a href="#" class="nav-link">設定</a></li>
-				</ul>
-			</nav>
-			<div class="title">まもログ 🐥</div>
-		</header>
+    <div class="app-shell">
+        <!-- =========================
+             ヘッダー / ハンバーガーメニュー
+             ========================= -->
+        <header class="topbar">
+            <button id="menu-toggle" class="menu-btn">☰</button>
+            <nav id="side-menu" class="side-menu">
+                <ul>
+                    <li><a href="#" class="nav-link">ログイン</a></li>
+                    <li><a href="/todos/new" class="nav-link">Todo作成</a></li>
+                    <li><a href="/diary/new" class="nav-link">日記登録</a></li>
+                    <li><a href="#" class="nav-link">レポート参照</a></li>
+                    <li><a href="#" class="nav-link">設定</a></li>
+                </ul>
+            </nav>
+            <div class="title">まもログ 🐥</div>
+        </header>
 
-		<!-- メイン -->
-		<main class="main-area">
-			<nav class="tabbar">
-				<a class="tab active" href="/todos" data-tab="todo">タスク</a>
-				<a class="tab" href="#" data-tab="diary">日記</a>
-				<a class="tab" href="#" data-tab="calendar">カレンダー</a>
-				<a class="tab" href="#" data-tab="mypage">マイページ</a>
-			</nav>
+        <main class="main-area">
+            <!-- =========================
+                 タブバー（見た目だけ。リンク先は必要に応じて実装）
+                 ========================= -->
+            <nav class="tabbar">
+                <a class="tab active" href="/todos" data-tab="todo">タスク</a>
+                <a class="tab" href="#" data-tab="diary">日記</a>
+                <a class="tab" href="#" data-tab="calendar">カレンダー</a>
+                <a class="tab" href="#" data-tab="mypage">マイページ</a>
+            </nav>
 
-			<!-- ツールコントロール -->
-			<section class="controls">
-				<input id="searchInput" type="search" placeholder="検索（タイトル）">
-				<a href="/todos/new"><button class="btn">＋ 新規作成</button></a>
-			</section>
+            <!-- =========================
+                 検索フォーム / 新規作成
+                 - name="keyword" は Controller の @RequestParam("keyword") と一致させること
+                 ========================= -->
+            <section class="controls">
+                <form th:action="@{/todos/search}" method="get" style="display:flex; gap:5px;">
+                    <!-- keyword を再表示するため model に "keyword" が入っていると便利 -->
+                    <input id="searchInput" type="search" name="keyword" placeholder="キーワードで検索"
+                           th:value="${keyword}">
+                    <button type="submit" class="btn">検索</button>
+                </form>
+                <a href="/todos/new"><button type="button" class="btn">＋ 新規作成</button></a>
+            </section>
 
-			<!-- 未完了タスク（付箋風・縦並び） -->
-			<section id="tab-content">
-				<div id="todo" class="tab-pane active">
-					<section class="todo-header">
-						<h1>今日のやること</h1>
-						<div class="remaining">
-							残り：<span id="pending-count" th:text="${#lists.size(todoList)}">0</span> 件
-						</div>
-					</section>
+            <!-- =========================
+                 並び替え / 日付指定（Controller側は sortBy と date を受け取れるように）
+                 ========================= -->
+            <section class="sort-options">
+                <span>並び替え:</span>
+                <!-- sortBy パラメータ: account / category / dueDate / title など -->
+                <a th:href="@{/todos/sort(sortBy='account')}" th:classappend="${sortBy == 'account'} ? ' active'">担当者順</a> |
+                <a th:href="@{/todos/sort(sortBy='category')}" th:classappend="${sortBy == 'category'} ? ' active'">カテゴリ順</a> |
+                <a th:href="@{/todos/sort(sortBy='dueDate')}" th:classappend="${sortBy == 'dueDate'} ? ' active'">日付順</a>
+                <!-- 日付で絞り込みたい場合は date を渡す（Controller側で受け取り、絞り込む実装をする） -->
+                <form th:action="@{/todos/sort}" method="get" style="display:inline-block; margin-left:10px;">
+                    <input type="date" name="date" th:value="${date}">
+                    <button type="submit">日付表示</button>
+                </form>
+            </section>
 
-					<!-- 未完了タスクリスト（縦並び） -->
-					<section class="todo-list vertical" id="pending-list">
-						<li th:each="todo : ${todoList}" class="todo-card" th:attr="data-id=${todo.id}">
-							<div class="todo-main">
-								<label class="chk">
-									<input type="checkbox" class="todo-checkbox" th:attr="data-id=${todo.id}" />
-									<span class="fakebox"></span>
-								</label>
+            <!-- =========================
+                 タブコンテンツ：未完了/完了タスク表示
+                 ※ View 側は Todo エンティティ（プロパティ：id, title, memo, account, category, dueDate, dueTime, completed）を前提
+                 Controller は model に todoList と completedList をセットして渡すこと
+                 ========================= -->
+            <section id="tab-content">
+                <div id="todo" class="tab-pane active">
 
-								<div class="todo-body">
-									<div class="todo-title">
-										<span th:text="${todo.title}">タイトル</span>
-										<!-- 担当者バッジ -->
-										<span class="assignee" th:text="${todo.account}"
-											th:classappend="${todo.account == 'ぱぱ'} ? ' papa' : ' mama'">
-										</span>
-									</div>
+                    <!-- ヘッダー：未完了件数 -->
+                    <section class="todo-header">
+                        <h1>今日以降のやること</h1>
+                        <!-- #lists.size は null 安全ではないため、Controller 側で空リスト保証が好ましい -->
+                        <div class="remaining">
+                            残り：<span id="pending-count" th:text="${todoList != null ? todoList.size() : 0}">0</span> 件
+                        </div>
+                    </section>
 
-									<div class="todo-meta" th:text="${todo.memo}">メモ</div>
-									<!-- カテゴリ表示（存在する場合のみ） -->
-									<div class="todo-meta" th:if="${todo.category != null}">
-										カテゴリ: <span th:text="${todo.category.name}">カテゴリ名</span>
-									</div>
-									<!-- 期限表示（存在する場合のみ） -->
-									<div class="todo-meta" th:if="${todo.dueDate != null}">
-										期限:
-										<span th:text="${todo.dueDate}">yyyy-MM-dd</span>
-										<span th:if="${todo.dueTime != null}" th:text="${todo.dueTime}">HH:mm</span>
-									</div>
-								</div>
-							</div>
+                    <!-- 未完了リスト（縦並び） -->
+                    <section class="todo-list vertical" id="pending-list">
+                        <!--
+                          th:each で model の "todoList"（List<Todo>）を繰り返す。
+                          ここでは変数名を "todo" にしています（わかりやすさのため）。
+                        -->
+                        <li th:each="todo : ${todoList}"
+                            class="todo-card"
+                            th:attr="data-id=${todo.id}">
 
-							<!-- 編集リンク（未完了にのみ表示） -->
-							<div class="todo-actions">
-								<a th:href="@{/todos/{id}/edit(id=${todo.id})}" class="edit-link">編集</a>
-							</div>
-						</li>
-					</section>
+                            <!-- チェックボックス：押すと /todos/{id}/toggle に fetch する想定（app.js） -->
+                            <div class="todo-main">
+                                <label class="chk">
+                                    <input type="checkbox"
+                                           class="todo-checkbox"
+                                           th:attr="data-id=${todo.id}"
+                                           th:checked="${todo.completed} ? 'checked' : null"
+                                           />
+                                    <span class="fakebox"></span>
+                                </label>
 
-					<!-- 完了タスク（初期表示：表示） -->
-					<section class="completed-tasks">
-						<h2>
-							完了タスク
-							<button id="toggle-completed-btn" type="button">非表示にする</button>
-						</h2>
+                                <!-- タイトル・担当者・メモ・カテゴリ・期限 -->
+                                <div class="todo-body">
+                                    <div class="todo-title">
+                                        <span th:text="${todo.title}">タイトル</span>
+                                        <!-- 担当者バッジ（ぱぱ/まま でクラス付与） -->
+                                        <span class="assignee"
+                                              th:text="${todo.account}"
+                                              th:classappend="${todo.account == 'ぱぱ'} ? ' papa' : ' mama'">
+                                        </span>
+                                    </div>
 
-						<!-- 完了は controller 側で findByCompleted(true) -> completedList -->
-						<section class="todo-list vertical" id="completed-list">
-							<li th:each="todo : ${completedList}" class="todo-card done" th:attr="data-id=${todo.id}">
-								<div class="todo-main">
-									<label class="chk">
-										<input type="checkbox" class="todo-checkbox" th:attr="data-id=${todo.id}"
-											checked />
-										<span class="fakebox"></span>
-									</label>
+                                    <!-- メモ（null の場合は空表示） -->
+                                    <div class="todo-meta" th:text="${todo.memo}">メモ</div>
 
-									<div class="todo-body">
-										<div class="todo-title">
-											<span th:text="${todo.title}">タイトル</span>
-											<!-- 担当者バッジ -->
-											<span class="assignee" th:text="${todo.account}"
-												th:classappend="${todo.account == 'ぱぱ'} ? ' papa' : ' mama'">
-											</span>
-										</div>
-										<div class="todo-meta" th:text="${todo.memo}">メモ</div>
-										<!-- カテゴリ表示（存在する場合のみ） -->
-										<div class="todo-meta" th:if="${todo.category != null}">
-											カテゴリ: <span th:text="${todo.category.name}">カテゴリ名</span>
-										</div>
-										<div class="todo-meta" th:if="${todo.dueDate != null}">
-											期限:
-											<span th:text="${todo.dueDate}">yyyy-MM-dd</span>
-											<span th:if="${todo.dueTime != null}" th:text="${todo.dueTime}">HH:mm</span>
-										</div>
-									</div>
-								</div>
-								<!-- 完了の行には編集リンクは表示しない（要望に応じて可） -->
-							</li>
-						</section>
-					</section>
+                                    <!-- カテゴリは存在する場合のみ表示 -->
+                                    <div class="todo-meta" th:if="${todo.category != null}">
+                                        カテゴリ: <span th:text="${todo.category.name}">カテゴリ名</span>
+                                    </div>
 
-				</div>
-			</section>
-		</main>
-	</div>
+                                    <!-- 期限（date / time がある場合のみ） -->
+                                    <div class="todo-meta" th:if="${todo.dueDate != null}">
+                                        期限:
+                                        <span th:text="${todo.dueDate}">yyyy-MM-dd</span>
+                                        <span th:if="${todo.dueTime != null}" th:text="${todo.dueTime}">HH:mm</span>
+                                    </div>
+                                </div>
+                            </div>
 
-	<script src="/js/app.js"></script>
-	<script src="/js/todo-new.js"></script>
+                            <!-- 編集リンク（編集画面は /todos/{id}/edit を Controller で用意） -->
+                            <div class="todo-actions">
+                                <a th:href="@{/todos/{id}/edit(id=${todo.id})}" class="edit-link">編集</a>
+                            </div>
+                        </li>
+                    </section>
+
+                    <!-- 完了タスク -->
+                    <section class="completed-tasks">
+                        <h2>
+                            完了タスク
+                            <button id="toggle-completed-btn" type="button">非表示にする</button>
+                        </h2>
+
+                        <section class="todo-list vertical" id="completed-list">
+                            <!-- 完了タスクは completedList を繰り返す -->
+                            <li th:each="todo : ${completedList}"
+                                class="todo-card done"
+                                th:attr="data-id=${todo.id}">
+                                <div class="todo-main">
+                                    <label class="chk">
+                                        <!-- 完了済みはチェック済みで表示 -->
+                                        <input type="checkbox" class="todo-checkbox" th:attr="data-id=${todo.id}" checked />
+                                        <span class="fakebox"></span>
+                                    </label>
+                                    <div class="todo-body">
+                                        <div class="todo-title">
+                                            <span th:text="${todo.title}">タイトル</span>
+                                            <span class="assignee" th:text="${todo.account}"
+                                                  th:classappend="${todo.account == 'ぱぱ'} ? ' papa' : ' mama'"></span>
+                                        </div>
+                                        <div class="todo-meta" th:text="${todo.memo}">メモ</div>
+                                        <div class="todo-meta" th:if="${todo.category != null}">
+                                            カテゴリ: <span th:text="${todo.category.name}">カテゴリ名</span>
+                                        </div>
+                                        <div class="todo-meta" th:if="${todo.dueDate != null}">
+                                            期限:
+                                            <span th:text="${todo.dueDate}">yyyy-MM-dd</span>
+                                            <span th:if="${todo.dueTime != null}" th:text="${todo.dueTime}">HH:mm</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </section>
+                    </section>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- JS（app.js はチェックボックス toggle 等を扱う） -->
+    <script src="/js/app.js"></script>
+    <script src="/js/todo-new.js"></script>
 </body>
-
 </html>

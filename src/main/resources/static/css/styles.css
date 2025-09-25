@@ -72,12 +72,12 @@ body{
 }
 
 /* 期限管理（色分け） */
-.todo-card.overdue {
-    background-color: #ffcccc; /* 過ぎた期限は赤 */
+.normal {
+	background-color: white;	/* 期限内のタスクは白色 */
 }
 
-.todo-card.due-soon {
-    background-color: #fff0b3; /* 24時間以内は黄色 */
+.todo-card.overdue {
+    background-color: #ff6666; /* 期限切れは赤色 */
 }
 
 /* 完了タスクの折りたたみ（summary 形式を使わないので装飾のみ） */

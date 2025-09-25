@@ -10,25 +10,25 @@
 // -------------------------
 // ハンバーガーメニュー
 // -------------------------
-const menuToggle = document.querySelector("#menu-toggle");
-const sideMenu = document.querySelector("#side-menu");
-const overlay = document.createElement("div");
+const menuToggle = document.querySelector("#menu-toggle"); // メニュー開閉ボタン
+const sideMenu = document.querySelector("#side-menu");     // サイドメニュー
+const overlay = document.createElement("div");             // 背景オーバーレイ
 overlay.id = "overlay";
-document.body.appendChild(overlay);
+document.body.appendChild(overlay);                        // DOMに追加
 
-// メニュー開閉
+// メニュー開閉ボタン押下時
 menuToggle.addEventListener("click", () => {
-	sideMenu.classList.toggle("active");
-	overlay.classList.toggle("active");
+	sideMenu.classList.toggle("active");   // メニュー表示/非表示
+	overlay.classList.toggle("active");    // 背景オーバーレイ表示/非表示
 });
 
 // メニュー内リンククリックで閉じる
 document.querySelectorAll(".nav-link").forEach(link => {
 	link.addEventListener("click", e => {
 		const href = link.getAttribute("href");
-		if (href.startsWith("#")) e.preventDefault();
-		sideMenu.classList.remove("active");
-		overlay.classList.remove("active");
+		if (href.startsWith("#")) e.preventDefault(); // #リンクはページ遷移させない
+		sideMenu.classList.remove("active");          // メニュー閉じる
+		overlay.classList.remove("active");           // オーバーレイ閉じる
 	});
 });
 
@@ -39,20 +39,23 @@ overlay.addEventListener("click", () => {
 });
 
 // -------------------------
-// タグボタン選択
+// タグボタン選択（例：Todo作成画面）
 // -------------------------
-const tagBtns = document.querySelectorAll('.tag-btn');
-const tagInput = document.getElementById('tagInput');
+const tagBtns = document.querySelectorAll('.tag-btn'); // タグボタン群
+const tagInput = document.getElementById('tagInput');  // hidden input
 
 tagBtns.forEach(btn => {
-	if (btn.dataset.tag === tagInput.value) {
-		btn.classList.add('selected'); // 初期値を選択
+	// 初期値と一致するタグを選択状態にする
+	if (btn.dataset.tag === tagInput?.value) {
+		btn.classList.add('selected');
 	}
 
+	// タグボタン押下時
 	btn.addEventListener('click', () => {
+		// すべてのボタンの選択を解除
 		tagBtns.forEach(b => b.classList.remove('selected'));
-		btn.classList.add('selected');
-		tagInput.value = btn.dataset.tag;
+		btn.classList.add('selected');          // クリックしたボタンを選択
+		if(tagInput) tagInput.value = btn.dataset.tag; // hidden input に値を設定
 	});
 });
 
@@ -62,24 +65,32 @@ tagBtns.forEach(btn => {
 
 // 件数更新
 function updateCounts() {
-	const pendingCountEl = document.getElementById("pending-count");
-	const pendingList = document.getElementById("pending-list");
-	const completedList = document.getElementById("completed-list");
+	const pendingCountEl = document.getElementById("pending-count"); // 未完了件数表示
+	const pendingList = document.getElementById("pending-list");     // 未完了リスト
+	const completedList = document.getElementById("completed-list"); // 完了リスト
 
 	const pending = pendingList ? pendingList.querySelectorAll(".todo-card").length : 0;
 	const completed = completedList ? completedList.querySelectorAll(".todo-card").length : 0;
 
-	if (pendingCountEl) pendingCountEl.textContent = pending;
-	// 完了件数は見た目でわかるが、必要なら DOM に追加して更新可能
+	if (pendingCountEl) pendingCountEl.textContent = pending; // 未完了件数更新
+	// 完了件数は必要に応じてDOMに表示可能
 }
 
 // カード移動（未完了 ↔ 完了）
 function moveCardToList(card, targetList, markDone) {
 	if (!card || !targetList) return;
-	card.classList.toggle("done", !!markDone); // 完了スタイル切替
+
+	// 完了クラス切替
+	card.classList.toggle("done", !!markDone);
+
+	// チェックボックス状態を反映
 	const cb = card.querySelector(".todo-checkbox");
-	if (cb) cb.checked = !!markDone;          // チェック状態反映
-	targetList.appendChild(card);             // DOM移動
+	if (cb) cb.checked = !!markDone;
+
+	// リスト間でDOMを移動
+	targetList.appendChild(card);
+
+	// 件数更新
 	updateCounts();
 }
 
@@ -88,7 +99,7 @@ function moveCardToList(card, targetList, markDone) {
 // -------------------------
 async function handleToggle(id, card, checked) {
 	try {
-		// サーバー側の GET /todos/{id}/toggle を呼ぶ
+		// サーバー側に切替を通知
 		const resp = await fetch(`/todos/${id}/toggle`, { method: "GET" });
 		if (!resp.ok) throw new Error("Network response was not ok");
 
@@ -112,7 +123,9 @@ async function handleToggle(id, card, checked) {
 // DOMロード時イベント
 // -------------------------
 document.addEventListener("DOMContentLoaded", function() {
+	// -------------------------
 	// チェックボックス変更時
+	// -------------------------
 	document.addEventListener("change", function(e) {
 		if (e.target.matches(".todo-checkbox")) {
 			const id = e.target.getAttribute("data-id");
@@ -122,27 +135,32 @@ document.addEventListener("DOMContentLoaded", function() {
 		}
 	});
 
+	// -------------------------
 	// 編集リンククリック（イベント委譲）
+	// -------------------------
 	document.addEventListener("click", function(e) {
 		if (e.target.matches(".edit-link")) {
-			e.preventDefault();
+			e.preventDefault(); // デフォルトリンク動作停止
 			const url = e.target.getAttribute("href");
-			// 編集画面へ移動
-			window.location.href = url;
+			window.location.href = url; // 編集画面へ移動
 		}
 	});
 
+	// -------------------------
 	// 完了タスクの折りたたみ表示切替
+	// -------------------------
 	const toggleBtn = document.getElementById("toggle-completed-btn");
 	if (toggleBtn) {
 		toggleBtn.addEventListener("click", function() {
 			const completedSection = document.getElementById("completed-list");
 			if (!completedSection) return;
-			completedSection.classList.toggle("hidden");
+			completedSection.classList.toggle("hidden"); // hiddenクラスで表示/非表示
 			toggleBtn.textContent = completedSection.classList.contains("hidden") ? "表示する" : "非表示にする";
 		});
 	}
 
+	// -------------------------
 	// 初期件数更新
+	// -------------------------
 	updateCounts();
 });

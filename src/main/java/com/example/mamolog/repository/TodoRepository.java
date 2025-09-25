@@ -1,7 +1,6 @@
 package com.example.mamolog.repository;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,9 +9,21 @@ import com.example.mamolog.entity.Todo;
 
 public interface TodoRepository extends JpaRepository<Todo, Long> {
 
-    // 完了/未完了リスト取得
+    // ────────── 完了状態で検索 ──────────
     List<Todo> findByCompleted(boolean completed);
-    
-    // 指定の条件でTodoの存在チェック
-    boolean existsByTitleAndDueDateAndDueTime(String title, LocalDate dueDate, LocalTime DueTime);
+
+    // ────────── 重複チェック ──────────
+    /* boolean existsByTitleAndDueDateAndDueTime(String title, LocalDate dueDate, LocalTime dueTime); */
+
+    // ────────── 部分一致検索（キーワード + 完了状態） ──────────
+    List<Todo> findByTitleContainingAndCompleted(String title, boolean completed);
+
+    // ────────── 並び替え用メソッド ──────────
+    List<Todo> findByCompletedOrderByDueDateAscDueTimeAsc(boolean completed);         // 期限順
+    List<Todo> findByCompletedOrderByCategoryNameAsc(boolean completed);              // カテゴリ順
+    List<Todo> findByCompletedOrderByAccountAsc(boolean completed);                    // 担当者順    
+    List<Todo> findByCompletedOrderByTitleAsc(boolean completed);                     // タイトル順
+
+    // ────────── 日付検索 ──────────
+    List<Todo> findByDueDateAndCompleted(LocalDate dueDate, boolean completed);
 }
