@@ -46,7 +46,7 @@ public class CalendarController {
         LocalDate firstDay = yearMonth.atDay(1);
         LocalDate lastDay = yearMonth.atEndOfMonth();
 
-        // ────────── 日付リスト作成（空白セル含む） ──────────
+        // ────────── 月内の日付リスト作成（空白セル含む） ──────────
         List<LocalDate> days = new ArrayList<>();     
 
         // 月初の曜日に応じた空白セル追加（日曜始まり）
@@ -99,6 +99,7 @@ public class CalendarController {
     public String showDetail(@RequestParam("date") String date, Model model) {
         LocalDate selectedDate = LocalDate.parse(date);
         List<Todo> todos = todoService.findByDate(selectedDate); // その日の全タスク
+        if (todos == null) todos = new ArrayList<>();			 // Todoがない場合は空配列をViewに渡す
 
         model.addAttribute("selectedDate", selectedDate);
         model.addAttribute("todos", todos);
