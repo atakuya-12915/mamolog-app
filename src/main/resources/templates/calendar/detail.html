@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${selectedDate} + ' の予定一覧'">予定一覧</title>
+    <link rel="stylesheet" th:href="@{/css/calendar.css}">
+</head>
+<body>
+    <h1 th:text="${selectedDate} + ' の予定一覧'">予定一覧</h1>
+
+    <div th:if="${#lists.isEmpty(todos)}">
+        <p>この日に予定はありません。</p>
+    </div>
+
+    <ul th:if="${!#lists.isEmpty(todos)}">
+        <li th:each="todo : ${todos}">
+            <span th:text="${todo.title}">タイトル</span>  
+            <span th:text="${todo.description}">詳細</span>  
+        </li>
+    </ul>
+
+    <a th:href="@{/calendar}">← カレンダーに戻る</a>
+</body>
+</html>

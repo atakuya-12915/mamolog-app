@@ -85,6 +85,7 @@ public class TodoService {
         todoRepository.save(todo);
     }   
     
+    // Search機能
     // ────────── キーワード検索 ──────────
     public List<Todo> searchTodos(String keyword, boolean completed) {
     	if (keyword == null || keyword.isEmpty()) {
@@ -92,30 +93,31 @@ public class TodoService {
         }
         return todoRepository.findByTitleContainingAndCompleted(keyword, completed);
     }
-    
-    // ────────── 日付で絞り込み ──────────
-    public List<Todo> getTodosByDate(LocalDate date, boolean completed) {
-        // Repositoryに「期限日と完了状態で検索するメソッド」を定義して呼び出す
-        return todoRepository.findByDueDateAndCompleted(date, completed);
+     
+    // ────────── 日付検索（日付＋完了フラグ）──────────
+    public List<Todo> findByDate(LocalDate date) {
+        return todoRepository.findByDueDate(date);
     }
 
+    // Sort機能
     // ────────── ソート処理 / Reposiotory側でソート ──────────
     public List<Todo> sortTodos(String sortBy, boolean completed) {
-    // sortBy の値に応じて切り替え
-    switch (sortBy) {
-    case "dueDate":  // 期限日でソート
-        return todoRepository.findByCompletedOrderByDueDateAscDueTimeAsc(completed);
-    case "category": // カテゴリでソート
-        return todoRepository.findByCompletedOrderByCategoryNameAsc(completed);
-    case "account":  // 担当者でソート
-        return todoRepository.findByCompletedOrderByAccountAsc(completed);
-    default:         // 指定がない場合はそのまま
-        return getTodosByCompleted(completed);
+	    // sortBy の値に応じて切り替え
+	    switch (sortBy) {
+	    case "dueDate":  // 期限日でソート
+	        return todoRepository.findByCompletedOrderByDueDateAscDueTimeAsc(completed);
+	    case "category": // カテゴリでソート
+	        return todoRepository.findByCompletedOrderByCategoryNameAsc(completed);
+	    case "account":  // 担当者でソート
+	        return todoRepository.findByCompletedOrderByAccountAsc(completed);
+	    default:         // 指定がない場合はそのまま
+	        return getTodosByCompleted(completed);
+	    }
     }
-}
     
-    // ---------- 日付検索 -------------------
-    public List<Todo> findTodosByDate(LocalDate date, boolean completed) {
+    // ────────── 日付検索（日付＋完了フラグ）──────────
+    public List<Todo> getTodosByDate(LocalDate date, boolean completed) {
+        // Repositoryに「期限日と完了状態で検索するメソッド」を定義して呼び出す
         return todoRepository.findByDueDateAndCompleted(date, completed);
     }
 }

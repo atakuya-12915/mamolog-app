@@ -54,7 +54,7 @@ public class TodoController {
         return "todos/todo-new";	// todo-new.html 新規作成フォーム表示
     }
 
-    // ────────── 新規作成・保存 -------------------
+    // ────────── 新規作成・保存 ──────────
     @PostMapping
     public String createTodo(@ModelAttribute Todo todo,
                              @RequestParam(required = false) String newCategoryName,
@@ -64,7 +64,7 @@ public class TodoController {
         return "redirect:/todos";	// Todo 一覧画面にリダイレクト
     }
 
-    // ────────── 編集フォーム表示 -------------------
+    // ────────── 編集フォーム表示 ──────────
     @GetMapping("/{id}/edit")
     public String editTodoForm(@PathVariable Long id, Model model) {        
         model.addAttribute("todo", todoService.getTodo(id));
@@ -72,7 +72,7 @@ public class TodoController {
         return "todos/todo-edit";	// todo-edit.html 編集画面にリダイレクト
     }
 
-    // ────────── 更新 -------------------
+    // ────────── 更新 ──────────
     @PostMapping("/{id}/update")
     public String updateTodo(@PathVariable Long id,
                              @ModelAttribute Todo todo,
@@ -82,7 +82,7 @@ public class TodoController {
         return "redirect:/todos";	// Todo 一覧画面にリダイレクト
     }
 
-    // ────────── 削除 -------------------
+    // ────────── 削除 ──────────
     @PostMapping("/{id}/delete")
     public String deleteTodo(@PathVariable Long id,
                              RedirectAttributes redirectAttributes) {
@@ -91,7 +91,7 @@ public class TodoController {
         return "redirect:/todos";		// Todo 一覧画面にリダイレクト
     }
 
-    // ────────── 完了トグル -------------------
+    // ────────── 完了トグル ──────────
     @GetMapping("/{id}/toggle")
     public String toggleTodo(@PathVariable Long id,
                              RedirectAttributes redirectAttributes) {

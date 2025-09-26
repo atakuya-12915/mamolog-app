@@ -19,11 +19,12 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
     List<Todo> findByTitleContainingAndCompleted(String title, boolean completed);
 
     // ────────── 並び替え用メソッド ──────────
-    List<Todo> findByCompletedOrderByDueDateAscDueTimeAsc(boolean completed);         // 期限順
-    List<Todo> findByCompletedOrderByCategoryNameAsc(boolean completed);              // カテゴリ順
-    List<Todo> findByCompletedOrderByAccountAsc(boolean completed);                    // 担当者順    
-    List<Todo> findByCompletedOrderByTitleAsc(boolean completed);                     // タイトル順
+    List<Todo> findByCompletedOrderByDueDateAscDueTimeAsc(boolean completed);       // 期限順
+    List<Todo> findByCompletedOrderByCategoryNameAsc(boolean completed);            // カテゴリ順
+    List<Todo> findByCompletedOrderByAccountAsc(boolean completed);                 // 担当者順    
+    List<Todo> findByCompletedOrderByTitleAsc(boolean completed);                   // タイトル順
 
     // ────────── 日付検索 ──────────
-    List<Todo> findByDueDateAndCompleted(LocalDate dueDate, boolean completed);
+    List<Todo> findByDueDate(LocalDate dueDate);									// 日付のみ
+    List<Todo> findByDueDateAndCompleted(LocalDate dueDate, boolean completed);		// 完了フラグ判定あり
 }

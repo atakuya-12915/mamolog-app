@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>まもログ | カレンダー</title>
+    <link rel="stylesheet" href="/css/calendar.css">
+</head>
+
+<body>
+    <div class="calendar-container">
+        <div class="calendar-nav">
+            <a th:href="@{/calendar(year=${yearMonth.year}, month=${yearMonth.monthValue - 1})}">前月</a>
+            <span th:text="${yearMonth} + ' カレンダー'"></span>
+            <a th:href="@{/calendar(year=${yearMonth.year}, month=${yearMonth.monthValue + 1})}">次月</a>
+        </div>
+
+        <!-- 曜日ヘッダー -->
+        <div class="calendar-grid">
+            <div class="day-header">日</div>
+            <div class="day-header">月</div>
+            <div class="day-header">火</div>
+            <div class="day-header">水</div>
+            <div class="day-header">木</div>
+            <div class="day-header">金</div>
+            <div class="day-header">土</div>
+        </div>
+
+        <!-- 週ごとの日付 -->
+        <div th:each="week : ${weeks}" class="calendar-grid">
+            <div th:each="day : ${week}" class="day-cell"
+                 th:classappend="${day != null && day.equals(T(java.time.LocalDate).now())} ? ' today'">
+                <div class="date-label" th:text="${day != null} ? ${day.dayOfMonth} : ''"></div>
+                <ul class="task-list" th:if="${day != null}">
+                    <li th:each="todo : ${todoMap[day]}" th:text="${todo.title}"
+                        th:classappend="${todo.completed} ? ' completed'"></li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>
