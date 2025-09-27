@@ -1,89 +1,111 @@
 .calendar-container {
-    width: 95%;
-    max-width: 1200px;	/* スマホ画面に納める */
-    margin: auto;
-    text-align: center;
-    font-family: Arial, sans-serif;
+	width: 95%;
+	max-width: 1200px;
+	margin: auto;
+	text-align: center;
+	font-family: Arial, sans-serif;
 }
 
 .calendar-nav {
-    margin: 10px 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+	margin: 10px 0;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 .calendar-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 2px;
+	display: grid;
+	grid-template-columns: repeat(7, 1fr);
+	gap: 2px;
 }
 
 .day-header {
-    font-weight: bold;
-    background: #f1f3f4;
-    padding: 6px;
-    font-size: 0.85em;
-    text-align: center;
+	font-weight: bold;
+	background: #f1f3f4;
+	padding: 6px;
+	font-size: 0.85em;
+	text-align: center;
 }
 
 .day-cell {
-    border: 1px solid #e0e0e0;
-    min-height: 80px;
-    padding: 4px;
-    text-align: left;
-    background: #fff;
-    position: relative;
-    display: flex;
-    flex-direction: column;
+	border: 1px solid #e0e0e0;
+	min-height: 100px;
+	padding: 6px;
+	text-align: left;
+	background: #fff;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
 }
 
 .day-cell.today {
-    border: 2px solid #4285f4;
-    background: #e8f0fe;
+	border: 2px solid #4285f4;
+	background: #e8f0fe;
 }
 
 .date-label {
-    font-size: 0.85em;
-    font-weight: bold;
-    margin-bottom: 4px;
+	font-size: 0.85em;
+	font-weight: bold;
+	margin-bottom: 6px;
 }
 
 .task-list {
-    list-style: none;
-    padding-left: 0;
-    margin: 0;
-    overflow-y: auto;
-    max-height: 60px;
+	list-style: none;
+	padding-left: 0;
+	margin: 0;
+	overflow-y: auto;
+	max-height: 72px;
 }
 
-.task-label {
-    background: #f0f8ff;
-    margin: 2px 0;
-    padding: 2px 4px;
-    border-radius: 4px;
-    font-size: 0.75em;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+/* Todo 行 - 縦棒を前置する */
+.todo-item {
+	margin: 2px 0;
+	padding: 2px 4px;
+	font-size: 0.78em;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.todo-item::before {
+	content: "｜";
+	margin-right: 6px;
+	color: #00796b;
+	font-weight: 700;
 }
 
 /* 完了タスクの線引き */
 .completed {
-    text-decoration: line-through;
-    color: gray;
+	text-decoration: line-through;
+	color: gray;
+}
+
+/* 詳細リンクをセル下部に配置 */
+.todo-link-container {
+	margin-top: auto;
+	text-align: right;
+}
+
+.todo-link {
+	font-size: 0.8em;
+	color: #2196f3;
+	text-decoration: none;
+}
+
+.todo-link:hover {
+	text-decoration: underline;
 }
 
 /* スマホ対応 */
 @media (max-width: 600px) {
-    .calendar-grid {
-        grid-template-columns: repeat(1, 1fr); /* 1列表示 */
-    }
+	.calendar-grid {
+		grid-template-columns: repeat(1, 1fr);
+	}
 }
 
 /* タブレット対応 */
 @media (min-width: 601px) and (max-width: 900px) {
-    .calendar-grid {
-        grid-template-columns: repeat(7, 1fr);
-    }
+	.calendar-grid {
+		grid-template-columns: repeat(7, 1fr);
+	}
 }

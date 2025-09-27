@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>まもログ | カレンダー</title>
+
+	<!-- FullCalendar CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+
+	<!-- 独自CSS -->
+	<link rel="stylesheet" href="/css/calendar.css">
+</head>
+
+<body>
+	<div class="calendar-container">
+		<div id="calendar"></div> <!-- FullCalendar が表示される要素 -->
+	</div>
+
+	<!-- FullCalendar JS -->
+	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+
+	<!-- プレーンJSでカレンダー初期化 -->
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			// カレンダーを表示するDOM
+			var calendarEl = document.getElementById('calendar');
+
+			// FullCalendar初期化
+			var calendar = new FullCalendar.Calendar(calendarEl, {
+				initialView: 'dayGridMonth',   // 月表示
+				locale: 'ja',                  // 日本語
+				headerToolbar: {
+					left: 'prev,next today',
+					center: 'title',
+					right: 'dayGridMonth,timeGridWeek,timeGridDay'
+				},
+				events: function (fetchInfo, successCallback, failureCallback) {
+					// REST APIからイベント取得（AJAX/非同期通信）
+					fetch('/api/calendar/todos')	// Todoリスト(JSON)をリクエスト（CalendarRestController/GETリクエスト）
+						.then(response => response.json())
+						.then(data => {
+							// FullCalendar用に整形
+							const events = data.map(todo => ({
+								id: todo.id,
+								title: todo.title + (todo.completed ? ' ✅' : ''),
+								start: todo.start
+							}));
+							successCallback(events);
+						})
+						.catch(error => {
+							console.error('Error fetching todos:', error);
+							failureCallback(error);
+						});
+				},
+				eventClick: function (info) {
+					// クリック時に詳細画面へ遷移
+					window.location.href = '/calendar/detail?date=' + info.event.startStr;
+				}
+			});
+
+			calendar.render(); // カレンダー描画
+		});
+	</script>
+</body>
+
+</html>

@@ -1,12 +1,8 @@
 package com.example.mamolog.controller;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.example.mamolog.entity.Todo;
 import com.example.mamolog.service.TodoService;
 
+// カレンダー・日毎の詳細画面表示用のコントローラー
 @Controller
 @RequestMapping("/calendar")
 public class CalendarController {
@@ -26,7 +23,15 @@ public class CalendarController {
     public CalendarController(TodoService todoService) {
         this.todoService = todoService;
     }
+    
+    // fullCalendar.html（カレンダー）を表示
+    @GetMapping
+    public String showCalendar() {
+    	
+    	return "calendar/fullCalendar";		// fullCalendar.html を返す
+    }
 
+    /* ⚠️以下、旧バージョンのコード⚠️
     // ────────── 月間カレンダー画面表示 ──────────
     @GetMapping
     public String showCalendar(
@@ -80,9 +85,18 @@ public class CalendarController {
         Map<LocalDate, List<Todo>> todoMap = new HashMap<>();
         for (LocalDate date : days) {
             if (date != null) {
-                List<Todo> todos = todoService.getTodosByDate(date, false); // 未完了
-                todos.addAll(todoService.getTodosByDate(date, true));       // 完了
-                todoMap.put(date, todos);
+                List<Todo> todos = new ArrayList<>();	// 空配列で初期化（.getTodosByDate の null対策）
+                List<Todo> incomplete = todoService.getTodosByDate(date, false); 	// 未完了
+                List<Todo> complete  = todoService.getTodosByDate(date, true); 		// 完了
+                
+                if (incomplete != null) {
+                	todos.addAll(incomplete);
+                }
+                if (complete != null) {
+                	todos.addAll(complete);
+                }
+
+                todoMap.put(date, todos);		// 空リストでも必ず put
             }
         }
 
@@ -93,6 +107,7 @@ public class CalendarController {
 
         return "calendar/calendar"; // calendar/calendar.html
     }
+    */
 
     // ────────── 日付クリック時の詳細表示 ──────────
     @GetMapping("/detail")
