@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>日記 新規作成</title>
+</head>
+
+<body>
+	<h2>日記を追加</h2>
+
+	<form th:action="@{/diaries/create}" method="post" enctype="multipart/form-data">
+		<!-- 日付（任意で指定できる） -->
+		<label>日付：
+			<input type="date" name="diaryDate" />
+		</label>
+		<br />
+
+		<!-- 本文（複数行） -->
+		<label>本文：
+			<textarea name="content" rows="5" cols="40" placeholder="今日の日記..."></textarea>
+		</label>
+		<br />
+
+		<!-- 写真（1枚） -->
+		<label>写真（1枚）：
+			<input type="file" name="photoFile" accept="image/*" />
+		</label>
+		<br />
+
+		<button type="submit">保存</button>
+	</form>
+
+	<a th:href="@{/home}">Homeへ戻る</a>
+</body>
+
+</html>

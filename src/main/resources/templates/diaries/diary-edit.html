@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>日記 新規作成</title>
+</head>
+
+<body>
+	<h2>日記を追加</h2>
+
+<form th:action="@{'/diaries/' + ${diary.id} + '/update'}" method="post" enctype="multipart/form-data">
+    <input type="date" name="diaryDate" th:value="${diary.diaryDate}"/>
+    <textarea name="content" rows="6" cols="60" th:text="${diary.content}"></textarea>
+
+    <div th:if="${diary.photoFilename != null}">
+        <!-- 既存写真を表示 -->
+        <img th:src="@{'/uploads/' + ${diary.photoFilename}}" style="max-width:240px;" />
+        <!-- 写真を削除したいときのチェック -->
+        <label><input type="checkbox" name="removePhoto" /> 写真を削除する</label>
+    </div>
+
+    <label>新しい写真に差し替え：
+        <input type="file" name="photoFile" accept="image/*"/>
+    </label>
+
+    <button type="submit">更新</button>
+</form>
+
+<!-- 削除ボタン -->
+<form th:action="@{'/diaries/' + ${diary.id} + '/delete'}" method="post" onsubmit="return confirm('本当に削除しますか？');">
+    <button type="submit">削除</button>
+</form>
+
+
+	<a th:href="@{/home}">Homeへ戻る</a>
+</body>
+
+</html>

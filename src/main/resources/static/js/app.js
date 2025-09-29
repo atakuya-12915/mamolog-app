@@ -55,7 +55,7 @@ tagBtns.forEach(btn => {
 		// すべてのボタンの選択を解除
 		tagBtns.forEach(b => b.classList.remove('selected'));
 		btn.classList.add('selected');          // クリックしたボタンを選択
-		if(tagInput) tagInput.value = btn.dataset.tag; // hidden input に値を設定
+		if (tagInput) tagInput.value = btn.dataset.tag; // hidden input に値を設定
 	});
 });
 
@@ -152,9 +152,13 @@ document.addEventListener("DOMContentLoaded", function() {
 	const toggleBtn = document.getElementById("toggle-completed-btn");
 	if (toggleBtn) {
 		toggleBtn.addEventListener("click", function() {
+			// 完了タスクリスト部分のみ取得
 			const completedSection = document.getElementById("completed-list");
 			if (!completedSection) return;
-			completedSection.classList.toggle("hidden"); // hiddenクラスで表示/非表示
+
+			// hiddenクラスで表示/非表示の切替
+			completedSection.classList.toggle("hidden");
+			// ボタン文字の切替
 			toggleBtn.textContent = completedSection.classList.contains("hidden") ? "表示する" : "非表示にする";
 		});
 	}

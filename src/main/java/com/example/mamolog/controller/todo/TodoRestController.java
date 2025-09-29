@@ -1,4 +1,4 @@
-package com.example.mamolog.controller;
+package com.example.mamolog.controller.todo;
 
 import java.time.LocalDate;
 import java.util.List;

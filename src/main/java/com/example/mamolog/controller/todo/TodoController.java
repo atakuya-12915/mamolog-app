@@ -1,4 +1,4 @@
-package com.example.mamolog.controller;
+package com.example.mamolog.controller.todo;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public class TodoController {
         // null 空配列保証
         model.addAttribute("todoList", todoList != null ? todoList : new ArrayList<>());
         model.addAttribute("completedList", completedList != null ? completedList : new ArrayList<>());
-    	return "todos/list";	// list.html 一覧画面表示
+    	return "todos/todo-list";	// list.html 一覧画面表示
     }
 
     // ────────── 新規作成フォーム表示 ──────────

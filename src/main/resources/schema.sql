@@ -21,6 +21,16 @@ CREATE TABLE IF NOT EXISTS todos (
 	CONSTRAINT uq_todo UNIQUE (due_date, due_time)	-- 例）07:00と19:00なら登録OK
 );
 
+-- diariesテーブル作成
+CREATE TABLE diaries (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,  					-- 主キー（必須）
+    comment TEXT NOT NULL,                 					-- コメント本文（複数行）
+    photo_path VARCHAR(255),               					-- 写真ファイルのパス（1枚）
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP, 								-- 作成日時
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 	-- 更新日時
+);
+
+
 -- 外部キー制約（todos.category_id に入る値が、必ず categories.id に存在する値に限定する） --
 -- ALTER TABLE todos
 -- ADD CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES categories(id);

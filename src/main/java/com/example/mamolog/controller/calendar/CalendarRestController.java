@@ -1,4 +1,4 @@
-package com.example.mamolog.controller;
+package com.example.mamolog.controller.calendar;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;

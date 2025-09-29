@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><meta charset="UTF-8"><title>日記詳細</title></head>
+<body>
+<h2 th:text="${diary != null ? diary.diaryDate : '日記がありません'}"></h2>
+
+<div th:if="${diary != null}">
+    <p th:text="${diary.content}"></p>
+
+    <div th:if="${diary.photoFilename != null}">
+        <img th:src="@{'/uploads/' + ${diary.photoFilename}}" style="max-width:420px;"/>
+    </div>
+</div>
+
+<a th:href="@{/home}">Homeへ</a>
+</body>
+</html>

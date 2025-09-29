@@ -1,4 +1,4 @@
-package com.example.mamolog.controller;
+package com.example.mamolog.controller.todo;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

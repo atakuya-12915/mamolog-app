@@ -36,10 +36,10 @@
                 <div class="form-group">
                     <label>カテゴリ</label>
                     <!-- 既存カテゴリ選択 -->
-                    <select th:field="*{category}" >
+                    <select name="category.id">
                         <option value="">選択してください</option>
                         <option th:each="category : ${categories}"
-                                th:value="${category}"
+                                th:value="${category.id}"
                                 th:text="${category.name}"
                                 th:selected="${category == todo.category}">
                         </option>

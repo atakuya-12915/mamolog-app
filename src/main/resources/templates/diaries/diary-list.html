@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>日記一覧</title>
+	<link rel="stylesheet" href="/css/styles.css">
+	<link rel="stylesheet" href="/css/list.css">
+</head>
+
+<body>
+	<div class="app-shell">
+		<main class="main-area">
+
+			<!-- コントロール（新規作成 / 並び替え） -->
+			<section class="controls">
+				<h2>日記一覧</h2>
+				<a href="/diaries/new">
+					<button type="button" class="btn">＋ 新規作成</button>
+				</a>
+			</section>
+
+			<!-- 並び替え（例: 日付順） -->
+			<section class="sort-options">
+				<span>並び替え:</span>
+				<a th:href="@{/diaries(sortBy='diaryDate')}"
+					th:classappend="${sortBy == 'diaryDate'} ? ' active'">日付順</a>
+			</section>
+
+			<!-- 日記一覧 -->
+			<ul class="todo-list vertical">
+				<li th:each="diary : ${diaryPage.content}" class="todo-card">
+					<div class="todo-main">
+						<div class="todo-body">
+							<div class="todo-title">
+								<span th:text="${#temporals.format(diary.diaryDate, 'yyyy-MM-dd')}">日付</span>
+							</div>
+							<div class="todo-meta" th:text="${diary.content}">本文</div>
+
+							<!-- 写真 -->
+							<div th:if="${diary.photoFilename != null}">
+								<img th:src="@{'/uploads/' + ${diary.photoFilename}}" width="200" />
+							</div>
+
+							<!-- 編集リンクを追加 -->
+							<div class="actions">
+								<a th:href="@{'/diaries/' + ${diary.id} + '/edit'}">
+									<button type="button" class="btn">編集</button>
+								</a>
+							</div>
+						</div>
+					</div>
+				</li>
+			</ul>
+
+
+			<!-- ページング -->
+			<div class="pagination">
+				<span th:if="${diaryPage.hasPrevious()}">
+					<a th:href="@{/diaries(page=${currentPage - 1}, sortBy=${sortBy})}">前へ</a>
+				</span>
+				<span th:text="${currentPage + 1}">1</span> / <span th:text="${diaryPage.totalPages}">1</span>
+				<span th:if="${diaryPage.hasNext()}">
+					<a th:href="@{/diaries(page=${currentPage + 1}, sortBy=${sortBy})}">次へ</a>
+				</span>
+			</div>
+
+			<p><a href="/home" class="edit-link">Homeに戻る</a></p>
+		</main>
+	</div>
+</body>
+
+</html>
