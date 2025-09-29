@@ -6,59 +6,74 @@
 	<meta name="viewport" content="width=device-width,initial-scale=1" />
 	<title>Todo編集</title>
 	<link rel="stylesheet" href="/css/styles.css" />
-	<link rel="stylesheet" href="/css/todo-edit.css" />
+	<link rel="stylesheet" href="/css/todo.css" />
 </head>
 
 <body>
 	<div class="app-shell">
 		<main class="main-area">
 			<div class="form-container">
-				<h2>Todo編集</h2>
-				<form th:action="@{/todos/{id}(id=${todo.id})}" th:object="${todo}" method="post">
+				<h2>Todo<span class="edit-title">編集</span></h2>
+				<form th:action="@{/todos/{id}/update(id=${todo.id})}" th:object="${todo}" method="post">
+
+					<!-- タイトル -->
 					<label>タイトル：</label>
 					<input type="text" th:field="*{title}" required>
 
+					<!-- メモ -->
 					<label>メモ：</label>
 					<textarea th:field="*{memo}"></textarea>
 
+					<!-- 担当者 -->
 					<label>担当者：</label>
 					<select th:field="*{account}" required>
 						<option value="">選択してください</option>
-						<option value="ぱぱ">ぱぱ</option>
-						<option value="まま">まま</option>
+						<option value="ぱぱ" th:selected="${todo.account == 'ぱぱ'}">ぱぱ</option>
+						<option value="まま" th:selected="${todo.account == 'まま'}">まま</option>
 					</select>
 
+					<!-- カテゴリ -->
 					<label>カテゴリ：</label>
-					<select th:field="*{category}" required>
-						<option value="">選択してください</option>
-						<option th:each="category : ${categories}"
-								th:value="${category.id}"
-								th:text="${category != null ? category.name : ''}">
-						</option>
-					</select>
+					<div class="form-group">
+						<select name="category.id">
+							<option value="">選択してください</option>
+							<option th:each="category : ${categories}"
+									th:value="${category.id}"
+									th:text="${category.name}"
+									th:selected="${category == todo.category}">
+							</option>
+						</select>
+						<input type="text" name="newCategoryName" placeholder="新しいカテゴリを追加">
+					</div>
 
+					<!-- 期限 -->
 					<label>期限日：</label>
 					<input type="date" th:field="*{dueDate}">
 
 					<label>期限時刻：</label>
 					<input type="time" th:field="*{dueTime}" step="60">
 
+					<!-- 完了 -->
 					<label>完了：</label>
 					<input type="checkbox" th:field="*{completed}">
 
+					<!-- アクションボタン -->
 					<div class="form-actions">
 						<button type="submit">更新</button>
 						<a th:href="@{/todos}" class="edit-link">一覧に戻る</a>
 					</div>
 				</form>
 
+				<!-- 削除ボタン -->
 				<form th:action="@{/todos/{id}/delete(id=${todo.id})}" method="post"
 					onsubmit="return confirm('本当に削除しますか？');" style="margin-top:12px;">
 					<button type="submit" class="danger">削除</button>
 				</form>
+
 			</div>
 		</main>
 	</div>
+	
+	<script href="js/category-edit.js"></script>	
 </body>
-
 </html>

@@ -3,37 +3,95 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title>日記 新規作成</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<title>日記編集</title>
+	<link rel="stylesheet" href="/css/styles.css" />
+	<link rel="stylesheet" href="/css/diary.css" />
 </head>
 
 <body>
-	<h2>日記を追加</h2>
+	<div class="app-shell">
+		<main class="main-area">
+			<div class="form-container">
+				<h2>日記<span class="edit-title">編集</span></h2>
 
-<form th:action="@{'/diaries/' + ${diary.id} + '/update'}" method="post" enctype="multipart/form-data">
-    <input type="date" name="diaryDate" th:value="${diary.diaryDate}"/>
-    <textarea name="content" rows="6" cols="60" th:text="${diary.content}"></textarea>
+				<form th:action="@{'/diaries/' + ${diary.id} + '/update'}" method="post" enctype="multipart/form-data">
 
-    <div th:if="${diary.photoFilename != null}">
-        <!-- 既存写真を表示 -->
-        <img th:src="@{'/uploads/' + ${diary.photoFilename}}" style="max-width:240px;" />
-        <!-- 写真を削除したいときのチェック -->
-        <label><input type="checkbox" name="removePhoto" /> 写真を削除する</label>
-    </div>
+					<!-- 日付 -->
+					<label>日付：
+						<input type="date" name="diaryDate" th:value="${diary.diaryDate}" />
+					</label>
 
-    <label>新しい写真に差し替え：
-        <input type="file" name="photoFile" accept="image/*"/>
-    </label>
+					<!-- 本文 -->
+					<label>本文：
+						<textarea name="content" rows="6" th:text="${diary.content}" placeholder="今日の日記..."></textarea>
+					</label>
 
-    <button type="submit">更新</button>
-</form>
+					<!-- 既存写真 -->
+					<div th:if="${diary.photoFilename != null}">
+						<img th:src="@{'/uploads/' + ${diary.photoFilename}}" id="photoPreview" />
+						<label>
+							<input type="checkbox" name="removePhoto" /> 写真を削除する
+						</label>
+					</div>
 
-<!-- 削除ボタン -->
-<form th:action="@{'/diaries/' + ${diary.id} + '/delete'}" method="post" onsubmit="return confirm('本当に削除しますか？');">
-    <button type="submit">削除</button>
-</form>
+					<!-- 新しい写真 -->
+					<label>新しい写真に差し替え：
+						<input type="file" name="photoFile" accept="image/*" id="photoInput" />
+						<img id="newPhotoPreview" src="#" alt="プレビュー画像" style="display:none;" />
+					</label>
 
+					<!-- タグ（任意で追加可能） -->
+					<div class="tag-section">
+						<button type="button" class="tag-btn">家事</button>
+						<button type="button" class="tag-btn">育児</button>
+						<button type="button" class="tag-btn">買い物</button>
+						<button type="button" class="tag-btn">趣味</button>
+					</div>
 
-	<a th:href="@{/home}">Homeへ戻る</a>
+					<!-- アクションボタン -->
+					<div class="form-actions">
+						<button type="submit">更新</button>
+						<a th:href="@{/home}" class="edit-link">Homeへ戻る</a>
+					</div>
+				</form>
+
+				<!-- 削除ボタン -->
+				<form th:action="@{'/diaries/' + ${diary.id} + '/delete'}" method="post"
+					  onsubmit="return confirm('本当に削除しますか？');" style="margin-top:12px;">
+					<button type="submit" class="danger">削除</button>
+				</form>
+			</div>
+		</main>
+	</div>
+
+	<script>
+		// 新しい写真プレビュー
+		const photoInput = document.getElementById('photoInput');
+		const newPhotoPreview = document.getElementById('newPhotoPreview');
+
+		photoInput.addEventListener('change', function() {
+			const file = this.files[0];
+			if (file) {
+				const reader = new FileReader();
+				reader.onload = function(e) {
+					newPhotoPreview.src = e.target.result;
+					newPhotoPreview.style.display = 'block';
+				}
+				reader.readAsDataURL(file);
+			} else {
+				newPhotoPreview.src = '#';
+				newPhotoPreview.style.display = 'none';
+			}
+		});
+
+		// タグ選択
+		const tagButtons = document.querySelectorAll('.tag-btn');
+		tagButtons.forEach(btn => {
+			btn.addEventListener('click', function() {
+				btn.classList.toggle('active');
+			});
+		});
+	</script>
 </body>
-
 </html>

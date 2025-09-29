@@ -1,0 +1,83 @@
+.form-container {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.form-container h2 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+label {
+  display: block;
+  margin-top: 1rem;
+  font-weight: bold;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="color"],
+select,
+textarea {
+  width: 100%;
+  margin-top: 0.3rem;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.tag-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.tag-btn {
+  padding: 0.4rem 0.8rem;
+  border: none;
+  border-radius: 20px;
+  background: #eee;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.tag-btn:hover {
+  background: #ddd;
+}
+.tag-btn.active {
+  background: #007bff;
+  color: #fff;
+}
+
+.form-actions {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+}
+
+/* 写真プレビュー */
+#photoPreview {
+	display: block;
+	margin-top: 0.5rem;
+	max-width: 100%;
+	max-height: 200px;
+	border-radius: 6px;
+}
+
+/* 編集・削除用 */
+.edit-title {
+	color: #dc3545;
+}
+
+.danger {
+  background: #dc3545;
+  color: #fff;
+}
+.danger:hover {
+  background: #c82333;
+}

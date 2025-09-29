@@ -60,3 +60,16 @@ textarea {
   gap: 1rem;
   justify-content: flex-end;
 }
+
+/* 編集・削除用 */
+.edit-title {
+	color: #dc3545;
+}
+
+.danger {
+  background: #dc3545;
+  color: #fff;
+}
+.danger:hover {
+  background: #c82333;
+}

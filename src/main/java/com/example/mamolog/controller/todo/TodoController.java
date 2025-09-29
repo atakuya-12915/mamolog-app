@@ -76,8 +76,9 @@ public class TodoController {
     @PostMapping("/{id}/update")
     public String updateTodo(@PathVariable Long id,
                              @ModelAttribute Todo todo,
+                             @RequestParam(value = "newCategoryName", required = false) String newCategoryName,
                              RedirectAttributes redirectAttributes) {
-        todoService.updateTodo(id, todo);
+        todoService.updateTodo(id, todo, newCategoryName);
         redirectAttributes.addFlashAttribute("message", "Todoを更新しました");
         return "redirect:/todos";	// Todo 一覧画面にリダイレクト
     }
@@ -107,7 +108,7 @@ public class TodoController {
         model.addAttribute("todoList", todoService.searchTodos(keyword, false));		// 未完了
         model.addAttribute("completedList", todoService.searchTodos(keyword, true));	// 完了
         model.addAttribute("keyword", keyword);											// 入力欄に保持
-        return "todos/list";
+        return "todos/todo-list";
     }
 
     // ────────── ソート + 日付絞り込み ──────────
@@ -133,6 +134,6 @@ public class TodoController {
 
         model.addAttribute("todoList", todoList);
         model.addAttribute("completedList", completedList);
-        return "todos/list";
+        return "todos/todo-list";
     }
 }

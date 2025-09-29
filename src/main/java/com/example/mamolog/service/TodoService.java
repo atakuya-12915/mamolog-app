@@ -60,17 +60,36 @@ public class TodoService {
     }
 
     // ---------- 更新 -------------------
-    public void updateTodo(Long id, Todo updated) {
-        Todo existing = getTodo(id);	// DBから既存Todoを取得
-        // フォーム送信された値で上書き
+    public void updateTodo(Long id, Todo updated, String newCategoryName) {
+    	
+    	Category categoryToSet = null;  // 最終的にセットするカテゴリ
+        
+    	// 新規カテゴリが入力されている場合
+    	if (newCategoryName != null && !newCategoryName.isEmpty()) {
+            Category newCategory = new Category();
+            newCategory.setName(newCategoryName);
+            categoryRepository.save(newCategory);  // 新規カテゴリをDBに保存
+            categoryToSet = newCategory;
+        } 
+        // 既存カテゴリが選択されている場合
+        else if (updated.getCategory() != null && updated.getCategory().getId() != null) {
+            categoryToSet = updated.getCategory();
+        }
+        // どちらもない場合は categoryToSet = null
+
+        // 既存Todo取得
+        Todo existing = todoRepository.findById(id).orElseThrow();
+
+        // フォーム値で更新
         existing.setTitle(updated.getTitle());
         existing.setMemo(updated.getMemo());
         existing.setAccount(updated.getAccount());
         existing.setDueDate(updated.getDueDate());
         existing.setDueTime(updated.getDueTime());
         existing.setCompleted(updated.isCompleted());
-        existing.setCategory(updated.getCategory());
-        todoRepository.save(existing);	// 更新データを保存
+        existing.setCategory(categoryToSet);  // nullの場合も安全にセット可能
+
+        todoRepository.save(existing);  // 保存
     }
 
     // ---------- 削除 -------------------

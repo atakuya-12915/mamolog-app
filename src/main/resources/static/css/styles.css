@@ -121,19 +121,7 @@ body{
 }
 
 
-/* レイアウト比較用（使い分け可能） */
-/* ① 横並びカード（未使用・参考） */
-.todo-list.horizontal {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.todo-list.horizontal .task-card {
-  width: 200px;
-  flex: none;
-}
-
-/* ② 縦並び（付箋風） — これをデフォルトにしている */
+/* 縦並び（付箋風） */
 .todo-list.vertical {
   display: flex;
   flex-direction: column;
