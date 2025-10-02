@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS todos (
 	CONSTRAINT uq_todo UNIQUE (due_date, due_time)	-- 例）07:00と19:00なら登録OK
 );
 
--- diariesテーブル作成
+-- diaries テーブル作成
 CREATE TABLE diaries (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,  					-- 主キー（必須）
     comment TEXT NOT NULL,                 					-- コメント本文（複数行）
@@ -30,7 +30,21 @@ CREATE TABLE diaries (
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP 	-- 更新日時
 );
 
+-- roles テーブル作成
+CREATE TABLE IF NOT EXISTS roles (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL
+);
 
--- 外部キー制約（todos.category_id に入る値が、必ず categories.id に存在する値に限定する） --
--- ALTER TABLE todos
--- ADD CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES categories(id);
+-- users テーブル作成
+CREATE TABLE IF NOT EXISTS users (
+    id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    role_id INT NOT NULL, 
+    enabled BOOLEAN NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,    
+    FOREIGN KEY (role_id) REFERENCES roles (id)
+);

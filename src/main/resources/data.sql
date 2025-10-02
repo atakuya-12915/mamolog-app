@@ -23,3 +23,6 @@
 
 -- INSERT INTO todos (title, memo, account, completed, created_at, updated_at, category_id, due_date, due_time)
 -- VALUES ('ランニング', '夜の運動', 'ぱぱ', 0, NOW(), NOW(), NULL, '2025-09-24', '19:00:00');
+
+-- 認証用サンプルデータ
+-- users テーブルにダミーユーザーを追加（id = 1 で固定し、username を "guest" にする）

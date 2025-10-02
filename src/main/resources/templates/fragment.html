@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>共通フラグメント</title>
+</head>
+<body>
+    <!-- metaタグ用 -->
+    <th:block th:fragment="meta">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </th:block>
+
+    <!-- CSSやBootstrapなどの共通スタイル用 -->
+    <th:block th:fragment="styles">
+        <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+        <link rel="stylesheet" th:href="@{/css/style.css}">
+    </th:block>
+
+    <!-- ヘッダー -->
+    <div th:fragment="header">
+        <header>
+            <h1>まもログ</h1>
+            <nav>
+                <a th:href="@{/home}">Home</a> |
+                <a th:href="@{/auth/login}">Login</a>
+            </nav>
+            <hr>
+        </header>
+    </div>
+
+    <!-- フッター -->
+    <div th:fragment="footer">
+        <footer>
+            <hr>
+            <p>&copy; 2025 Mamolog</p>
+        </footer>
+    </div>
+
+    <!-- 共通JS用 -->
+    <th:block th:fragment="scripts">
+        <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+        <script th:src="@{/js/main.js}"></script>
+    </th:block>
+</body>
+</html>

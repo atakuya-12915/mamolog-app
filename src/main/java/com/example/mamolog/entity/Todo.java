@@ -40,6 +40,11 @@ public class Todo {
 	@ManyToOne
 	@JoinColumn(name = "category_id", referencedColumnName = "id", nullable = true)
 	private Category category;				// カテゴリ（未選択可）※外部キーで管理
+	
+	// User との関連を追加
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
     
 	// 作成日時
 	@Column(name = "created_at", nullable = false, updatable = false)
