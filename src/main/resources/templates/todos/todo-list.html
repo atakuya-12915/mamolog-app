@@ -25,13 +25,14 @@
 
 			<!-- タブ切替 -->
 			<div class="tabbar">
-				<a href="#" class="tab active" data-tab="pending-tab">未完了タスク</a>
-				<a href="#" class="tab" data-tab="completed-tab">完了タスク</a>
+				<button type="button" class="tab todo-tab active" data-tab="pending-tab">未完了タスク</button>
+				<button type="button" class="tab todo-tab" data-tab="completed-tab">完了タスク</button>
 			</div>
+
 
 			<!-- 未完了タスク -->
 			<div id="pending-tab" class="tab-content">
-				<p>未完了件数: <span th:text="${incompleteTodos.totalElements}">0</span></p>
+				<p>未完了件数: <span id="pending-count" th:text="${incompleteTodos.totalElements}">0</span></p>
 				<ul id="pending-list" class="todo-list vertical">
 					<li th:each="todo : ${incompleteTodos.content}" class="todo-card">
 						<div class="todo-main">
@@ -46,8 +47,7 @@
 									カテゴリ: <span th:text="${todo.category.name}">カテゴリ名</span>
 								</div>
 								<div class="todo-meta" th:if="${todo.dueDate != null}">
-									期限:
-									<span th:text="${todo.dueDate}">yyyy-MM-dd</span>
+									期限: <span th:text="${todo.dueDate}">yyyy-MM-dd</span>
 									<span th:if="${todo.dueTime != null}" th:text="${todo.dueTime}">HH:mm</span>
 								</div>
 								<a th:href="@{/todos/{id}/edit(id=${todo.id})}" class="edit-link">編集</a>
@@ -86,8 +86,7 @@
 									カテゴリ: <span th:text="${todo.category.name}">カテゴリ名</span>
 								</div>
 								<div class="todo-meta" th:if="${todo.dueDate != null}">
-									期限:
-									<span th:text="${todo.dueDate}">yyyy-MM-dd</span>
+									期限: <span th:text="${todo.dueDate}">yyyy-MM-dd</span>
 									<span th:if="${todo.dueTime != null}" th:text="${todo.dueTime}">HH:mm</span>
 								</div>
 								<a th:href="@{/todos/{id}/edit(id=${todo.id})}" class="edit-link">編集</a>
@@ -115,6 +114,6 @@
 	</div>
 
 	<script src="/js/app.js"></script>
-
 </body>
+
 </html>

@@ -1,8 +1,5 @@
-// =========================
-// app.js
-// =========================
-
 document.addEventListener("DOMContentLoaded", function() {
+
 	// -------------------------
 	// ハンバーガーメニュー
 	// -------------------------
@@ -12,7 +9,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	overlay.id = "overlay";
 	document.body.appendChild(overlay);
 
-	if(menuToggle) {
+	if (menuToggle) {
 		menuToggle.addEventListener("click", () => {
 			sideMenu?.classList.toggle("active");
 			overlay.classList.toggle("active");
@@ -45,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function() {
 		btn.addEventListener('click', () => {
 			tagBtns.forEach(b => b.classList.remove('selected'));
 			btn.classList.add('selected');
-			if(tagInput) tagInput.value = btn.dataset.tag;
+			if (tagInput) tagInput.value = btn.dataset.tag;
 		});
 	});
 
@@ -92,7 +89,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			console.error(err);
 			alert("更新に失敗しました");
 			const cb = card.querySelector(".todo-checkbox");
-			if(cb) cb.checked = !checked;
+			if (cb) cb.checked = !checked;
 		}
 	}
 
@@ -100,16 +97,16 @@ document.addEventListener("DOMContentLoaded", function() {
 	// DOM操作（イベント委譲）
 	// -------------------------
 	document.addEventListener("change", function(e) {
-		if(e.target.matches(".todo-checkbox")) {
+		if (e.target.matches(".todo-checkbox")) {
 			const id = e.target.getAttribute("data-id");
 			const card = e.target.closest(".todo-card");
-			if(!card) return;
+			if (!card) return;
 			handleToggle(id, card, e.target.checked);
 		}
 	});
 
 	document.addEventListener("click", function(e) {
-		if(e.target.matches(".edit-link")) {
+		if (e.target.matches(".edit-link")) {
 			e.preventDefault();
 			const url = e.target.getAttribute("href");
 			window.location.href = url;
@@ -120,44 +117,36 @@ document.addEventListener("DOMContentLoaded", function() {
 	// 完了タスク折りたたみ
 	// -------------------------
 	const toggleBtn = document.getElementById("toggle-completed-btn");
-	if(toggleBtn) {
+	if (toggleBtn) {
 		toggleBtn.addEventListener("click", function() {
 			const completedSection = document.getElementById("completed-list");
-			if(!completedSection) return;
+			if (!completedSection) return;
 			completedSection.classList.toggle("hidden");
 			toggleBtn.textContent = completedSection.classList.contains("hidden") ? "表示する" : "非表示にする";
 		});
 	}
 
 	// -------------------------
-	// タブ切替（未完了/完了）
+	// タスク内タブ切替（未完了/完了）
 	// -------------------------
-	document.addEventListener("DOMContentLoaded", function() {
-    // タブ切替（未完了 / 完了）
-    const tabs = document.querySelectorAll('.tab');
-    const contents = document.querySelectorAll('.tab-content');
+	const todoTabs = document.querySelectorAll('.tab.todo-tab');
+	const todoContents = document.querySelectorAll('.tab-content');
 
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function(e) {
-            e.preventDefault();  // ページ遷移を防ぐ
+	todoTabs.forEach(tab => {
+		tab.addEventListener('click', function() {
+			const target = this.dataset.tab;
+			todoTabs.forEach(t => t.classList.remove('active'));
+			this.classList.add('active');
+			todoContents.forEach(c => {
+				if (c.id === target) c.classList.remove('hidden');
+				else c.classList.add('hidden');
+			});
+		});
+	});
 
-            const target = this.dataset.tab;
-
-            // タブの active クラス切替
-            tabs.forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-
-            // コンテンツ表示切替
-            contents.forEach(c => {
-                if(c.id === target) c.classList.remove('hidden');
-                else c.classList.add('hidden');
-            });
-        });
-    });
-
-    // ページ内リンクや Home などは既存のイベント委譲に任せる
-});
-
+	// -------------------------
 	// 初期件数更新
+	// -------------------------
 	updateCounts();
+
 });
