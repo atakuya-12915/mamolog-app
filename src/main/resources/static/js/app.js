@@ -129,20 +129,29 @@ document.addEventListener("DOMContentLoaded", function() {
 	// -------------------------
 	// タスク内タブ切替（未完了/完了）
 	// -------------------------
-	const todoTabs = document.querySelectorAll('.tab.todo-tab');
-	const todoContents = document.querySelectorAll('.tab-content');
+const tabs = document.querySelectorAll('.tab.todo-tab');
+  const todoCards = document.querySelectorAll('.todo-card');
 
-	todoTabs.forEach(tab => {
-		tab.addEventListener('click', function() {
-			const target = this.dataset.tab;
-			todoTabs.forEach(t => t.classList.remove('active'));
-			this.classList.add('active');
-			todoContents.forEach(c => {
-				if (c.id === target) c.classList.remove('hidden');
-				else c.classList.add('hidden');
-			});
-		});
-	});
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.tab; // 'pending-tab' または 'completed-tab'
+
+      // タブのアクティブ切替
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      // Todoの表示切替
+      todoCards.forEach(card => {
+        if (target === 'pending-tab' && card.classList.contains('incomplete')) {
+          card.classList.remove('hidden');
+        } else if (target === 'completed-tab' && card.classList.contains('complete')) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    });
+  });
 
 	// -------------------------
 	// 初期件数更新

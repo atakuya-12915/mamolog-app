@@ -4,70 +4,115 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1" />
-	<title>日記一覧</title>
+	<title>まもログ | Todo一覧</title>
 	<link rel="stylesheet" href="/css/styles.css">
+	<link rel="stylesheet" href="/css/todo.css">
 </head>
 
 <body>
 	<div class="app-shell">
 		<main class="main-area">
 
-			<!-- コントロール（新規作成 / 並び替え） -->
+			<!-- コントロール（検索 / 新規作成） -->
 			<section class="controls">
-				<h2>日記一覧</h2>
-				<a href="/diaries/new">
-					<button type="button" class="btn">＋ 新規作成</button>
-				</a>
+				<h2>Todo一覧</h2>
+				<form th:action="@{/todos/search}" method="get" style="display:flex; gap:5px;">
+					<input id="searchInput" type="search" name="keyword" placeholder="検索（タイトル）" th:value="${keyword}">
+					<button type="submit" class="btn">検索</button>
+				</form>
+				<a href="/todos/new"><button type="button" class="btn">＋ 新規作成</button></a>
 			</section>
 
-			<!-- 並び替え（例: 日付順） -->
-			<section class="sort-options">
-				<span>並び替え:</span>
-				<a th:href="@{/diaries(sortBy='diaryDate')}"
-					th:classappend="${sortBy == 'diaryDate'} ? ' active'">日付順</a>
-			</section>
+			<!-- タブ切替 -->
+			<div class="tabbar">
+				<button type="button" class="tab todo-tab active" data-tab="pending-tab">未完了タスク</button>
+				<button type="button" class="tab todo-tab" data-tab="completed-tab">完了タスク</button>
+			</div>
 
-			<!-- 日記一覧 -->
-			<ul class="todo-list vertical">
-				<li th:each="diary : ${diaryPage.content}" class="todo-card">
-					<div class="todo-main">
-						<div class="todo-body">
-							<div class="todo-title">
-								<span th:text="${#temporals.format(diary.diaryDate, 'yyyy-MM-dd')}">日付</span>
-							</div>
-							<div class="todo-meta" th:text="${diary.content}">本文</div>
-
-							<!-- 写真 -->
-							<div th:if="${diary.photoFilename != null}">
-								<img th:src="@{'/uploads/' + ${diary.photoFilename}}" width="200" />
-							</div>
-
-							<!-- 編集リンクを追加 -->
-							<div class="actions">
-								<a th:href="@{'/diaries/' + ${diary.id} + '/edit'}">
-									<button type="button" class="btn">編集</button>
-								</a>
+			<!-- 未完了タスク -->
+			<div id="pending-tab" class="tab-content">
+				<p>未完了件数: <span id="pending-count" th:text="${incompleteTodos.totalElements}">0</span></p>
+				<ul id="pending-list" class="todo-list vertical">
+					<li th:each="todo : ${incompleteTodos.content}" class="todo-card incomplete">
+						<div class="todo-main">
+							<div class="todo-body">
+								<div class="todo-title">
+									<span th:text="${todo.title}">タイトル</span>
+									<span class="assignee" th:text="${todo.account}"
+										th:classappend="${todo.account == 'ぱぱ'} ? ' papa' : ' mama'"></span>
+								</div>
+								<div class="todo-meta" th:text="${todo.memo}">メモ</div>
+								<div class="todo-meta" th:if="${todo.category != null}">
+									カテゴリ: <span th:text="${todo.category.name}">カテゴリ名</span>
+								</div>
+								<div class="todo-meta" th:if="${todo.dueDate != null}">
+									期限: <span th:text="${todo.dueDate}">yyyy-MM-dd</span>
+									<span th:if="${todo.dueTime != null}" th:text="${todo.dueTime}">HH:mm</span>
+								</div>
+								<a th:href="@{/todos/{id}/edit(id=${todo.id})}" class="edit-link">編集</a>
 							</div>
 						</div>
-					</div>
-				</li>
-			</ul>
+					</li>
+				</ul>
 
+				<!-- ページング -->
+				<div class="pagination" th:if="${incompleteTodos.totalPages > 1}">
+					<a th:href="@{/todos(incompletePage=${incompleteTodos.number - 1}, completePage=${completeTodos.number})}"
+						th:classappend="${incompleteTodos.first} ? ' disabled'">&laquo; 前へ</a>
+					<span th:each="i : ${#numbers.sequence(0, incompleteTodos.totalPages - 1)}">
+						<a th:href="@{/todos(incompletePage=${i}, completePage=${completeTodos.number})}"
+							th:text="${i + 1}" th:classappend="${i == incompleteTodos.number} ? ' active'">1</a>
+					</span>
+					<a th:href="@{/todos(incompletePage=${incompleteTodos.number + 1}, completePage=${completeTodos.number})}"
+						th:classappend="${incompleteTodos.last} ? ' disabled'">次へ &raquo;</a>
+				</div>
+			</div>
 
-			<!-- ページング -->
-			<div class="pagination">
-				<span th:if="${diaryPage.hasPrevious()}">
-					<a th:href="@{/diaries(page=${currentPage - 1}, sortBy=${sortBy})}">前へ</a>
-				</span>
-				<span th:text="${currentPage + 1}">1</span> / <span th:text="${diaryPage.totalPages}">1</span>
-				<span th:if="${diaryPage.hasNext()}">
-					<a th:href="@{/diaries(page=${currentPage + 1}, sortBy=${sortBy})}">次へ</a>
-				</span>
+			<!-- 完了タスク -->
+			<div id="completed-tab" class="tab-content hidden">
+				<p>完了件数: <span th:text="${completeTodos.totalElements}">0</span></p>
+				<ul id="completed-list" class="todo-list vertical">
+					<li th:each="todo : ${completeTodos.content}" class="todo-card complete">
+						<div class="todo-main">
+							<div class="todo-body">
+								<div class="todo-title">
+									<span th:text="${todo.title}">タイトル</span>
+									<span class="assignee" th:text="${todo.account}"
+										th:classappend="${todo.account == 'ぱぱ'} ? ' papa' : ' mama'"></span>
+								</div>
+								<div class="todo-meta" th:text="${todo.memo}">メモ</div>
+								<div class="todo-meta" th:if="${todo.category != null}">
+									カテゴリ: <span th:text="${todo.category.name}">カテゴリ名</span>
+								</div>
+								<div class="todo-meta" th:if="${todo.dueDate != null}">
+									期限: <span th:text="${todo.dueDate}">yyyy-MM-dd</span>
+									<span th:if="${todo.dueTime != null}" th:text="${todo.dueTime}">HH:mm</span>
+								</div>
+								<a th:href="@{/todos/{id}/edit(id=${todo.id})}" class="edit-link">編集</a>
+							</div>
+						</div>
+					</li>
+				</ul>
+
+				<!-- ページング -->
+				<div class="pagination" th:if="${completeTodos.totalPages > 1}">
+					<a th:href="@{/todos(incompletePage=${incompleteTodos.number}, completePage=${completeTodos.number - 1})}"
+						th:classappend="${completeTodos.first} ? ' disabled'">&laquo; 前へ</a>
+					<span th:each="i : ${#numbers.sequence(0, completeTodos.totalPages - 1)}">
+						<a th:href="@{/todos(incompletePage=${incompleteTodos.number}, completePage=${i})}"
+							th:text="${i + 1}" th:classappend="${i == completeTodos.number} ? ' active'">1</a>
+					</span>
+					<a th:href="@{/todos(incompletePage=${incompleteTodos.number}, completePage=${completeTodos.number + 1})}"
+						th:classappend="${completeTodos.last} ? ' disabled'">次へ &raquo;</a>
+				</div>
 			</div>
 
 			<p><a href="/home" class="edit-link">Homeに戻る</a></p>
+
 		</main>
 	</div>
+
+	<script src="/js/app.js"></script>
 </body>
 
 </html>

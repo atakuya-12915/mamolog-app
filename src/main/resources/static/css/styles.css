@@ -8,7 +8,10 @@
 }
 
 /* リセット＆基本 */
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+}
+
 body{
   margin:0;
   font-family: "Noto Sans JP", "Hiragino Sans", sans-serif;
@@ -17,134 +20,306 @@ body{
   -webkit-font-smoothing:antialiased;
 }
 
-.app-shell{min-height:100vh;display:flex;flex-direction:column}
+.app-shell{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
 .topbar{
-  display:flex;justify-content:space-around;align-items:center;
-  padding:14px 18px;background:transparent;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  padding:14px 18px;
+  background:transparent;
   border-bottom:1px solid rgba(0,0,0,0.06);
 }
-.topbar .title{font-size:18px;color:var(--accent);font-weight:700;}
 
-.main-area{flex:1;padding:16px;max-width:900px;margin:0 auto;width:100%}
+.topbar .title{
+  font-size:18px;
+  color:var(--accent);
+  font-weight:700;
+}
+
+.main-area{
+  flex:1;
+  padding:16px;
+  max-width:900px;
+  margin:0 auto;
+  width:100%;
+}
 
 /* タブ */
-.tabbar{display:flex;gap:10px;margin-bottom:14px}
-.tab{padding:8px 12px;border-radius:18px;background:#fff;border:1px solid rgba(0,0,0,0.04);text-decoration:none;color:var(--muted)}
-.tab.active{background:var(--accent-2);border-color:var(--accent);color:var(--text)}
-
-/* controls */
-.controls{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.controls input[type="search"]{padding:8px 10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);width:220px}
-
-/* タスクリスト（共通） */
-.todo-list{display:flex;flex-direction:column;gap:12px;padding:0;margin:0;list-style:none}
-.todo-card{
-  display:flex;justify-content:space-between;align-items:flex-start;
-  background:var(--card);padding:12px;border-radius:10px;border-left:6px solid var(--accent);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
-}
-.todo-card.done{opacity:0.6;text-decoration:line-through}
-.todo-main{display:flex;align-items:flex-start;gap:12px}
-.todo-body{min-width:0}
-.todo-title{font-weight:600;margin-bottom:6px}
-.todo-meta{font-size:12px;color:var(--muted)}
-.chk input{display:none}
-.chk .fakebox{width:22px;height:22px;border-radius:6px;border:2px solid rgba(0,0,0,0.12);display:inline-block;vertical-align:middle;cursor:pointer}
-.chk input:checked + .fakebox{background:var(--accent);border-color:var(--accent)}
-
-/* 担当者バッチ（色分け） */
-.assignee {
-  display: inline-block;
-  margin-left: 0.5rem;
-  padding: 0.2rem 0.6rem;
-  border-radius: 1rem;
-  font-size: 0.8rem;
-  font-weight: bold;
-  color: #fff;
+.tabbar{
+  display:flex;
+  gap:10px;
+  margin-bottom:14px;
 }
 
-.assignee.papa {
-  background-color: #2b80ff; /* グリーン系 */
+.tab{
+  padding:8px 12px;
+  border-radius:18px;
+  background:#fff;
+  border:1px solid rgba(0,0,0,0.04);
+  text-decoration:none;
+  color:var(--muted);
+  cursor:pointer;
 }
 
-.assignee.mama {
-  background-color: #ff8ca0; /* ピンク系 */
+
+.tab-content.active {
+    display: block;
 }
 
-/* 期限管理（色分け） */
-.normal {
-	background-color: white;	/* 期限内のタスクは白色 */
+.tab.active{
+  background:var(--accent-2);
+  border-color:var(--accent);
+  color:var(--text);
 }
 
-.todo-card.overdue {
-    background-color: #ff6666; /* 期限切れは赤色 */
-}
-
-/* 完了タスクの折りたたみ（summary 形式を使わないので装飾のみ） */
-.completed-tasks h2{
-	display:flex;
-	align-items:center;gap:12px
-}
-
-#toggle-completed-btn {
-	margin-left: 8px;
-	padding:6px 10px;
-	border-radius:6px;
-	border:1px solid rgba(0,0,0,0.06);
-	background:#fff;
-	cursor:pointer;
-}
-
-/* 完了タスクリスト非表示用 */
-#completed-list.hidden {
+/* Todo1つに対しての処理 */
+.todo-card.hidden{
   display: none;
 }
 
-/* 追加：完了タスクのデザイン */
-.todo-card.done {
-  opacity: 0.7;
-  text-decoration: line-through;
-  border-left-color: #9adf9a;
+/* controls */
+.controls{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+}
+
+.controls input[type="search"]{
+  padding:8px 10px;
+  border-radius:8px;
+  border:1px solid rgba(0,0,0,0.06);
+  width:220px;
+}
+
+/* タスクリスト（共通） */
+.todo-list{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  padding:0;
+  margin:0;
+  list-style:none;
+}
+
+.todo-card{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  background:var(--card);
+  padding:12px;
+  border-radius:10px;
+  border-left:6px solid var(--accent);
+  box-shadow:0 2px 6px rgba(0,0,0,0.06);
+}
+
+.todo-card.done{
+  opacity:0.7;
+  text-decoration:line-through;
+  border-left-color:#9adf9a;
+}
+
+.todo-main{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+}
+
+.todo-body{
+  min-width:0;
+}
+
+.todo-title{
+  font-weight:600;
+  margin-bottom:6px;
+}
+
+.todo-meta{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.chk input{
+  display:none;
+}
+
+.chk .fakebox{
+  width:22px;
+  height:22px;
+  border-radius:6px;
+  border:2px solid rgba(0,0,0,0.12);
+  display:inline-block;
+  vertical-align:middle;
+  cursor:pointer;
+}
+
+.chk input:checked + .fakebox{
+  background:var(--accent);
+  border-color:var(--accent);
+}
+
+/* 担当者バッチ（色分け） */
+.assignee{
+  display:inline-block;
+  margin-left:0.5rem;
+  padding:0.2rem 0.6rem;
+  border-radius:1rem;
+  font-size:0.8rem;
+  font-weight:bold;
+  color:#fff;
+}
+
+.assignee.papa{
+  background-color:#2b80ff;
+}
+
+.assignee.mama{
+  background-color:#ff8ca0;
+}
+
+/* 期限管理（色分け） */
+.normal{
+  background-color:white;
+}
+
+.todo-card.overdue{
+  background-color:#ff6666;
+}
+
+/* 完了タスク折りたたみ */
+.completed-tasks h2{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+#toggle-completed-btn{
+  margin-left:8px;
+  padding:6px 10px;
+  border-radius:6px;
+  border:1px solid rgba(0,0,0,0.06);
+  background:#fff;
+  cursor:pointer;
 }
 
 /* 編集リンク */
-.edit-link {
-    font-size: 0.9em;
-    color: #007bff;
-    text-decoration: none;
-    margin-top: 5px;
-    display: inline-block;
+.edit-link{
+  font-size:0.9em;
+  color:#007bff;
+  text-decoration:none;
+  margin-top:5px;
+  display:inline-block;
 }
 
-.edit-link:hover {
-    text-decoration: underline;
+.edit-link:hover{
+  text-decoration:underline;
 }
-
 
 /* 縦並び（付箋風） */
-.todo-list.vertical {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+.todo-list.vertical{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
 }
-.todo-list.vertical .task-card {
-  width: 100%;
+
+.todo-list.vertical .task-card{
+  width:100%;
+}
+
+/* ページネーション */
+.pagination{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:6px;
+  margin-top:12px;
+  flex-wrap:wrap;
+}
+
+.pagination a{
+  padding:6px 10px;
+  border-radius:6px;
+  border:1px solid rgba(0,0,0,0.1);
+  text-decoration:none;
+  color:var(--text);
+  font-size:0.9rem;
+}
+
+.pagination a.active{
+  background:var(--accent-2);
+  border-color:var(--accent);
+}
+
+.pagination a.disabled{
+  opacity:0.5;
+  pointer-events:none;
 }
 
 /* フッター */
-.bottom-nav{display:flex;justify-content:space-around;padding:10px;border-top:1px solid rgba(0,0,0,0.06);background:#fff}
-.bn-item{text-decoration:none;color:var(--muted);font-size:13px}
+.bottom-nav{
+  display:flex;
+  justify-content:space-around;
+  padding:10px;
+  border-top:1px solid rgba(0,0,0,0.06);
+  background:#fff;
+}
+
+.bn-item{
+  text-decoration:none;
+  color:var(--muted);
+  font-size:13px;
+}
 
 /* サイドメニュー */
-.menu-btn{font-size:1.5rem;background: transparent;border: none;color: var(--accent);cursor:pointer;}
-.side-menu{position: fixed;top: 0; left: -220px;width: 200px;height: 100%;background: var(--accent-2);padding-top:4rem;transition:left 0.3s ease;}
-.side-menu.active{left:0}
-.side-menu ul{list-style:none;padding:0}
-.side-menu li{margin:1rem}
-.side-menu a{text-decoration:none;color:var(--text);}
+.menu-btn{
+  font-size:1.5rem;
+  background:transparent;
+  border:none;
+  color:var(--accent);
+  cursor:pointer;
+}
+
+.side-menu{
+  position:fixed;
+  top:0;
+  left:-220px;
+  width:200px;
+  height:100%;
+  background:var(--accent-2);
+  padding-top:4rem;
+  transition:left 0.3s ease;
+}
+
+.side-menu.active{
+  left:0;
+}
+
+.side-menu ul{
+  list-style:none;
+  padding:0;
+}
+
+.side-menu li{
+  margin:1rem;
+}
+
+.side-menu a{
+  text-decoration:none;
+  color:var(--text);
+}
 
 /* レスポンシブ（小さ目） */
-@media (max-width: 520px) {
-  .main-area { padding: 12px; }
-  .todo-card { width: 100%; padding:10px; }
+@media (max-width:520px){
+  .main-area{
+    padding:12px;
+  }
+  .todo-card{
+    width:100%;
+    padding:10px;
+  }
 }
