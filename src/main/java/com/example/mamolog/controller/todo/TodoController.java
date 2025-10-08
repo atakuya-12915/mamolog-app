@@ -30,32 +30,54 @@ public class TodoController {
         this.todoService = todoService;  // コンストラクタでServiceをセット
     }
 
-    // ────────── 一覧表示（未完了/完了 + ページネーション） ──────────
+    /* ───────────────────────────────────────────────
+    	一覧画面（全件ページング + タブ切替用）
+    ─────────────────────────────────────────────── */
     @GetMapping
     public String listTodos(
-            Model model,
-            @RequestParam(defaultValue = "0") int incompletePage, // 未完了タスクの現在ページ（0始まり）
-            @RequestParam(defaultValue = "0") int completePage    // 完了タスクの現在ページ（0始まり）
-    ) {
-        // 1ページあたり10件表示、未完了は期限日昇順
+            @RequestParam(defaultValue = "0") int incompletePage,
+            @RequestParam(defaultValue = "0") int completePage,
+            Model model) {
+
+        // ページング処理
         Pageable incompletePageable = PageRequest.of(incompletePage, 10, Sort.by("dueDate").ascending());
-        // 完了は作成日時降順で並べる
         Pageable completePageable = PageRequest.of(completePage, 10, Sort.by("createdAt").descending());
 
-        // Service層でページ単位の未完了タスクを取得
         Page<Todo> incompleteTodos = todoService.getTodosPage(false, incompletePageable);
-        // Service層でページ単位の完了タスクを取得
         Page<Todo> completeTodos = todoService.getTodosPage(true, completePageable);
 
-        // Viewに渡す
-        model.addAttribute("incompleteTodos", incompleteTodos); // 未完了タスク
-        model.addAttribute("completeTodos", completeTodos);     // 完了タスク
-        model.addAttribute("incompletePage", incompletePage);   // 現在ページ番号
+        model.addAttribute("incompleteTodos", incompleteTodos);
+        model.addAttribute("completeTodos", completeTodos);
+        model.addAttribute("incompletePage", incompletePage);
         model.addAttribute("completePage", completePage);
 
-        return "todos/todo-list"; // todo-list.html に遷移
+        return "todos/todo-list";
     }
+    
+    /* @GetMapping
+    public String listTodos(
+    		@RequestParam(defaultValue = "false") boolean completed, // 未完了を初期値
+            @RequestParam(defaultValue = "0") int page,              // ページ番号
+            @RequestParam(defaultValue = "5") int size,              // 1ページの件数
+            Model model) {
 
+        // 並び順設定（例：期限昇順 → 時間昇順）
+        Pageable pageable = PageRequest.of(page, size, Sort.by("dueDate").ascending().and(Sort.by("dueTime").ascending()));
+
+        // 全件をページングで取得（completedを区別しない）
+        Page<Todo> allTodosPage = todoService.getAllTodosPageSorted(pageable);
+
+        // Thymeleafでタブ切替表示するため全件データを渡す
+        model.addAttribute("allTodosPage", allTodosPage);
+        model.addAttribute("todos", allTodosPage.getContent());
+
+        // 初期タブ設定用（未完了タブをデフォルトにする）
+        model.addAttribute("defaultTab", "pending");
+
+        return "todos/todo-list";
+    } */
+   
+    
     // ────────── 新規作成フォーム表示 ──────────
     @GetMapping("/new")
     public String newTodoForm(@RequestParam(required = false) Long categoryId, Model model) {

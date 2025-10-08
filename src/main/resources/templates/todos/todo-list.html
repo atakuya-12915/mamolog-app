@@ -27,15 +27,15 @@
 			<!-- タブ切替 -->
 			<div class="tabbar">
 				<button type="button" class="tab todo-tab active" data-tab="pending-tab">未完了タスク</button>
-				<button type="button" class="tab todo-tab" data-tab="completed-tab">完了タスク</button>
+				<button type="button" class="tab todo-tab completed-tab" data-tab="completed-tab">完了タスク</button>
 			</div>
+
 
 			<!-- 未完了タスク -->
 			<div id="pending-tab" class="tab-content">
-				<p>未完了件数: <span id="pending-count" th:text="${incompleteTodos.totalElements}">0</span></p>
+				<p>未完了タスク / 件数: <span id="pending-count" th:text="${incompleteTodos.totalElements}">0</span></p>
 				<ul id="pending-list" class="todo-list vertical">
-					<li th:each="todo : ${incompleteTodos.content}"
-						class="todo-card incomplete">
+					<li th:each="todo : ${incompleteTodos.content}" class="todo-card incomplete cpmpleted">
 						<div class="todo-main">
 							<div class="todo-body">
 								<div class="todo-title">
@@ -72,10 +72,9 @@
 
 			<!-- 完了タスク -->
 			<div id="completed-tab" class="tab-content hidden">
-				<p>完了件数: <span th:text="${completeTodos.totalElements}">0</span></p>
+				<p>完了タスク / 件数: <span th:text="${completeTodos.totalElements}">0</span></p>
 				<ul id="completed-list" class="todo-list vertical">
-					<li th:each="todo : ${completeTodos.content}"
-						class="todo-card complete">
+					<li th:each="todo : ${completeTodos.content}" class="todo-card complete">
 						<div class="todo-main">
 							<div class="todo-body">
 								<div class="todo-title">

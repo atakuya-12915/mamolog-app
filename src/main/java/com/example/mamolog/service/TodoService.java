@@ -29,6 +29,23 @@ public class TodoService {
         this.categoryRepository = categoryRepository;
     }
 
+    /* ───────────────────────────────────────────────
+   		全件ページング取得（並び順はRepositoryの設定に準拠）
+    ─────────────────────────────────────────────── */
+    /**
+     * JavaScriptでタブ切替するため、全てのTodoをページング付きで取得（未完了／完了を区別しない）
+     * 並び順はリポジトリで定義された順序を使適用（例：期限昇順）
+     */
+    public Page<Todo> getAllTodosPageSorted(Pageable pageable) {
+        // completed = true / false を区別せず全件を pageable に従って取得
+        // findAll() で Pageable が適用される
+        return todoRepository.findAll(pageable);
+    }
+
+    /* ───────────────────────────────────────────────
+    	以下、既存メソッド（Home画面で使用）
+    ─────────────────────────────────────────────── */
+
     // ────────── 未完了/完了Todo一覧取得（List） ──────────
     public List<Todo> getTodosByCompleted(boolean completed) {
         return todoRepository.findByCompleted(completed); // 完了フラグで取得

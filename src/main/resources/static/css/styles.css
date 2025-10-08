@@ -231,6 +231,38 @@ body{
   width:100%;
 }
 
+/* =============================
+   Todoカード：未完了 / 完了区別
+============================= */
+
+/* 未完了タスク（付箋風） */
+.todo-card.incomplete {
+  background: var(--card);
+  border-left: 6px solid var(--accent);
+}
+
+/* 完了タスク（付箋風・緑色） */
+.todo-card.completed, /* todo-list.html 側で完了に class="completed" */
+.todo-card.done {     /* index.html 側で完了に class="done" */
+  background: #d4f7d4; /* 薄緑背景 */
+  border-left: 6px solid #6cc070; /* 緑のアクセント */
+  opacity: 0.9;
+  text-decoration: line-through;
+}
+
+/* チェックボックス：完了時も緑に */
+.chk input:checked + .fakebox {
+  background: var(--accent); /* 未完了は元の色 */
+}
+
+/* 完了タスクのタブ色 */
+.tab.completed-tab.active {
+  background: #d4f7d4;
+  border-color: #6cc070;
+  color: #333;
+}
+
+
 /* ページネーション */
 .pagination{
   display:flex;
@@ -312,6 +344,98 @@ body{
   text-decoration:none;
   color:var(--text);
 }
+
+/* ===== ログイン画面（モダン） ===== */
+:root{
+  --bg-gradient-start: #fffaf7;
+  --bg-gradient-end: #fff6f2;
+  --card-surface: rgba(255,255,255,0.88);
+  --accent: #ff8a66;
+  --accent-2: #ffb199;
+  --muted: #6d6d6d;
+  --glass-border: rgba(255,138,102,0.12);
+}
+
+/* 背景グラデーション + 軽いパターン */
+body {
+  background:
+    radial-gradient(800px 400px at 10% 10%, rgba(255,182,153,0.06), transparent 10%),
+    linear-gradient(180deg, var(--bg-gradient-start), var(--bg-gradient-end));
+  -webkit-font-smoothing:antialiased;
+}
+
+/* 画面中央に配置（ヘッダー・フッターがある場合は adjust する） */
+.login-viewport{
+  min-height: calc(100vh - 120px); /* header/footer の高さに合わせて調整 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+/* Card（ガラス風） */
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 14px;
+  background: var(--card-surface);
+  box-shadow: 0 12px 40px rgba(29, 41, 58, 0.08);
+  border: 1px solid var(--glass-border);
+  overflow: hidden;
+}
+
+/* カード内余白 */
+.login-card .card-body {
+  padding: 2rem;
+}
+
+/* ロゴ・見出し */
+.login-card h1 { letter-spacing: 0.2px; font-weight:700; color: #222; }
+
+/* ボタン（グラデ・丸め） */
+.mamolog-btn {
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: #fff;
+  border-radius: 10px;
+  padding: 0.8rem 1rem;
+  box-shadow: 0 10px 24px rgba(255,138,102,0.16);
+  border: none;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.mamolog-btn:hover,
+.mamolog-btn:focus {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 40px rgba(255,138,102,0.18);
+}
+
+/* input フォーカスのモダン表現 */
+.form-control {
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: rgba(255,255,255,0.9);
+  padding: 1.05rem 0.9rem;
+  height: auto;
+}
+.form-floating > .form-control:focus {
+  border-color: rgba(255,138,102,0.9);
+  box-shadow: 0 6px 22px rgba(255,138,102,0.08);
+}
+
+/* アラート調整 */
+.alert-warning {
+  background: linear-gradient(180deg, rgba(255,240,228,0.9), rgba(255,244,238,0.9));
+  border: 1px solid rgba(255,177,153,0.16);
+  color: #6b3b2b;
+  border-radius: 8px;
+  padding: 0.6rem 0.75rem;
+}
+
+/* 小画面微調整 */
+@media (max-width: 576px) {
+  .login-card { border-radius: 12px; }
+  .login-viewport { padding: 1.2rem; min-height: calc(100vh - 100px); }
+}
+
 
 /* レスポンシブ（小さ目） */
 @media (max-width:520px){

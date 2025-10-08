@@ -2,42 +2,18 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<meta charset="UTF-8" />
-	<meta name="viewport" content="width=device-width,initial-scale=1" />
-	<title>まもログ | Home</title>
-	<link rel="stylesheet" href="/css/styles.css" />
+	<th:block th:replace="~{fragment :: meta}"></th:block>
+    <th:block th:replace="~{fragment :: styles}"></th:block>
+    <title>まもログ | Home</title>
 </head>
 
 <body>
-	<div class="app-shell">
-		<!-- =========================
-             ヘッダー / ハンバーガーメニュー
-             ========================= -->
-		<header class="topbar">
-			<button id="menu-toggle" class="menu-btn">☰</button>
-			<nav id="side-menu" class="side-menu">
-				<ul>
-					<li><a href="#" class="nav-link">ログイン</a></li>
-					<li><a href="/todos/new" class="nav-link">Todo作成</a></li>
-					<li><a href="/diaries/new" class="nav-link">日記登録</a></li>
-					<li><a href="#" class="nav-link">レポート参照</a></li>
-					<li><a href="#" class="nav-link">設定</a></li>
-				</ul>
-			</nav>
-			<div class="title">まもログ 🐥</div>
-		</header>
+	<!-- ヘッダー -->
+    <div th:replace="~{fragment :: header}"></div>
+    <!-- グローバルタブ -->
+    <div th:replace="~{fragment :: tabnav}"></div>
 
 		<main class="main-area">
-			<!-- =========================
-                 グローバルナビタブ
-                 ========================= -->
-			<nav class="tabbar">
-				<a class="tab nav-tab active" href="/todos" data-tab="todo">タスク</a>
-				<a class="tab nav-tab" href="/diaries" data-tab="diary">日記</a>
-				<a class="tab nav-tab" href="/calendar" data-tab="calendar">カレンダー</a>
-				<a class="tab nav-tab" href="#" data-tab="mypage">マイページ</a>
-			</nav>
-
 			<!-- =========================
                  検索フォーム / 新規作成
                  - name="keyword" は Controller の @RequestParam("keyword") と一致させること
@@ -189,8 +165,11 @@
 		<a th:href="@{'/diaries/' + ${yesterdayDiary.id}}">詳細を見る</a>
 	</div>
 
-	<!-- JS（app.js はチェックボックス toggle 等を扱う） -->
-	<script src="/js/app.js"></script>
+    <!-- フッター -->
+    <div th:replace="~{fragment :: footer}"></div>
+
+    <!-- スクリプト -->
+    <div th:replace="~{fragment :: scripts}"></div>
 	<script src="/js/todo-new.js"></script>
 </body>
 
