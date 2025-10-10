@@ -36,12 +36,13 @@
 					<div class="form-group">
 						<label>カテゴリ</label>
 						<!-- 既存カテゴリ選択 -->
-						<select name="category.id">
+						<select th:field="*{category.id}">
 							<option value="">選択してください</option>
 							<option th:each="category : ${categories}" th:value="${category.id}"
-								th:text="${category.name}" th:selected="${category == todo.category}">
+								th:text="${category.name}">
 							</option>
 						</select>
+
 
 						<!-- 新規カテゴリ入力 -->
 						<input type="text" name="newCategoryName" placeholder="新しいカテゴリを追加">

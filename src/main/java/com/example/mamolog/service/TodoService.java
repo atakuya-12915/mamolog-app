@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.mamolog.entity.Category;
 import com.example.mamolog.entity.Todo;
+import com.example.mamolog.entity.User;
 import com.example.mamolog.repository.CategoryRepository;
 import com.example.mamolog.repository.TodoRepository;
 
@@ -73,14 +74,21 @@ public class TodoService {
     }
 
     // ────────── 新規作成 ──────────
-    public void createTodo(Todo todo, String newCategoryName) {
+    public void createTodo(Todo todo, String newCategoryName, User user) {
         // 新規カテゴリ名が入力されている場合
-        if (newCategoryName != null && !newCategoryName.isBlank()) {
-            Category newCategory = new Category();        // カテゴリオブジェクト作成
-            newCategory.setName(newCategoryName);        // 名前をセット
-            categoryRepository.save(newCategory);        // DBに保存
-            todo.setCategory(newCategory);               // Todoに紐付け
-        }
+    	if (newCategoryName != null && !newCategoryName.isBlank()) {
+    	    Category existing = categoryRepository.findByName(newCategoryName);
+    	    if (existing == null) {						// カテゴリ登録がない場合
+    	        Category newCategory = new Category();	// カテゴリオブジェクト作成
+    	        newCategory.setName(newCategoryName);	// 名前をセット
+    	        categoryRepository.save(newCategory);	// DBに保存
+    	        todo.setCategory(newCategory);			// Todoに紐付け
+    	    } else {
+    	        todo.setCategory(existing);				// 登録済カテゴリ名の場合：カテゴリ名をセット
+    	    }
+    	}
+
+    	todo.setUser(user);								 // ログイン中ユーザーの情報をセット
         todoRepository.save(todo);                       // TodoをDBに保存
     }
 

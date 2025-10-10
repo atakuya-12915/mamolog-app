@@ -7,8 +7,10 @@ import org.springframework.data.domain.PageRequest;          	// ページ番号
 import org.springframework.data.domain.Pageable;              	// ページング用インターフェース
 import org.springframework.data.domain.Sort;                  	// ソート情報を指定するクラス
 import org.springframework.format.annotation.DateTimeFormat;   	// 日付のパラメータ変換用
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.mamolog.entity.Todo;
+import com.example.mamolog.security.UserDetailsImpl;
 import com.example.mamolog.service.TodoService;
 
 @Controller
@@ -52,31 +55,7 @@ public class TodoController {
         model.addAttribute("completePage", completePage);
 
         return "todos/todo-list";
-    }
-    
-    /* @GetMapping
-    public String listTodos(
-    		@RequestParam(defaultValue = "false") boolean completed, // 未完了を初期値
-            @RequestParam(defaultValue = "0") int page,              // ページ番号
-            @RequestParam(defaultValue = "5") int size,              // 1ページの件数
-            Model model) {
-
-        // 並び順設定（例：期限昇順 → 時間昇順）
-        Pageable pageable = PageRequest.of(page, size, Sort.by("dueDate").ascending().and(Sort.by("dueTime").ascending()));
-
-        // 全件をページングで取得（completedを区別しない）
-        Page<Todo> allTodosPage = todoService.getAllTodosPageSorted(pageable);
-
-        // Thymeleafでタブ切替表示するため全件データを渡す
-        model.addAttribute("allTodosPage", allTodosPage);
-        model.addAttribute("todos", allTodosPage.getContent());
-
-        // 初期タブ設定用（未完了タブをデフォルトにする）
-        model.addAttribute("defaultTab", "pending");
-
-        return "todos/todo-list";
-    } */
-   
+    }   
     
     // ────────── 新規作成フォーム表示 ──────────
     @GetMapping("/new")
@@ -87,7 +66,7 @@ public class TodoController {
         if (categoryId != null) {
             todoService.getCategory(categoryId).ifPresent(todo::setCategory);
         }
-
+        
         model.addAttribute("todo", todo);                       // ViewにTodoを渡す
         model.addAttribute("categories", todoService.getAllCategories()); // カテゴリ一覧
         return "todos/todo-new"; // 新規作成フォーム
@@ -96,19 +75,27 @@ public class TodoController {
     // ────────── 新規作成・保存 ──────────
     @PostMapping
     public String createTodo(@ModelAttribute Todo todo,
+    						 BindingResult bindingResult,
                              @RequestParam(required = false) String newCategoryName,
+                             @AuthenticationPrincipal UserDetailsImpl userDetails,
                              RedirectAttributes redirectAttributes) {
-        todoService.createTodo(todo, newCategoryName);          // Serviceで保存
+    	
+    	// フォーム入力でのバリデーション
+    	if (bindingResult.hasErrors()) {
+    	        return "todos/new";		// 入力画面に戻す
+    	    }
+    	
+        todoService.createTodo(todo, newCategoryName, userDetails.getUser());          // Serviceで保存
         redirectAttributes.addFlashAttribute("message", "Todoを作成しました"); // フラッシュメッセージ
-        return "redirect:/todos";                               // 一覧にリダイレクト
+        return "redirect:/todos";		// 一覧にリダイレクト
     }
 
     // ────────── 編集フォーム表示 ──────────
     @GetMapping("/{id}/edit")
     public String editTodoForm(@PathVariable Long id, Model model) {
-        model.addAttribute("todo", todoService.getTodo(id));           // 編集対象をセット
-        model.addAttribute("categories", todoService.getAllCategories()); // カテゴリ一覧
-        return "todos/todo-edit";                                      // 編集画面
+        model.addAttribute("todo", todoService.getTodo(id));           		// 編集対象をセット
+        model.addAttribute("categories", todoService.getAllCategories()); 	// カテゴリ一覧
+        return "todos/todo-edit"; 		// 編集画面
     }
 
     // ────────── 更新 ──────────
