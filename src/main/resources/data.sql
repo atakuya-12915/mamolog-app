@@ -27,13 +27,3 @@
 -- 認証用サンプルデータ
 -- users テーブルにダミーユーザーを追加（id = 1 で固定し、username を "guest" にする）
 
--- ロール情報
-INSERT INTO roles (id, name) VALUES (1, 'ROLE_USER');
-INSERT INTO roles (id, name) VALUES (2, 'ROLE_ADMIN');
-
--- ユーザー情報（passwordはBCryptで暗号化したもの）
-INSERT INTO users (id, email, password, enabled) 
-VALUES (1, 'taro@example.com', '$2a$10$5ZpgmOjDffTNE03GHDHfKONV2JrcyQf34Te4NqoqxCkW4BDKJj1ne', true);
-
--- ユーザーとロールの関連（多対多の場合）
-INSERT INTO users_roles (user_id, role_id) VALUES (1, 1);
