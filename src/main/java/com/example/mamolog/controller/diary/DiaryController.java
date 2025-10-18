@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.mamolog.entity.Diary;
 import com.example.mamolog.repository.DiaryRepository;
@@ -47,7 +48,7 @@ public class DiaryController {
         model.addAttribute("diaryPage", diaryPage);
         model.addAttribute("currentPage", page);
 
-        return "diaries/diary-list"; // templates/diaries/diary-list.html
+        return "diaries/diary-list";
     }
 
     // -------------------------------
@@ -64,19 +65,44 @@ public class DiaryController {
     // -------------------------------
     @PostMapping("/create")
     public String create(@ModelAttribute Diary diary,
-    					 @AuthenticationPrincipal UserDetailsImpl userDetails,
-                         @RequestParam("photoFile") MultipartFile photo) throws IOException {
-
-        if (diary.getDiaryDate() == null)
-            diary.setDiaryDate(LocalDate.now());
-
-        if (photo != null && !photo.isEmpty()) {
-            String filename = fileStorageService.store(photo);		// uploads/ フォルダに photo のコピー保存
-            diary.setPhotoFilename(filename);						// photoFilename に UUID付ファイル名を返す
+                         @AuthenticationPrincipal UserDetailsImpl userDetails,
+                         @RequestParam(value = "photoFile", required = false) MultipartFile photo,
+                         RedirectAttributes redirectAttributes) {
+        
+        // バリデーション: ログインチェック
+        if (userDetails == null) {
+            redirectAttributes.addFlashAttribute("error", "ログインしてください");
+            return "redirect:/login";
         }
         
-        diary.setUser(userDetails.getUser());						// ログイン中ユーザー情報をセット
-        diaryRepository.save(diary);								// DBに diary と photoFilename が保存される
+        // バリデーション: 内容が空でないかチェック
+        if (diary.getContent() == null || diary.getContent().trim().isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "日記の内容を入力してください");
+            return "redirect:/diaries/new";
+        }
+
+        try {
+            if (diary.getDiaryDate() == null) {
+                diary.setDiaryDate(LocalDate.now());
+            }
+
+            if (photo != null && !photo.isEmpty()) {
+                String filename = fileStorageService.store(photo);
+                diary.setPhotoFilename(filename);
+            }
+            
+            diary.setUser(userDetails.getUser());
+            diaryRepository.save(diary);
+            redirectAttributes.addFlashAttribute("success", "日記を登録しました");
+            
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("error", "写真のアップロードに失敗しました");
+            return "redirect:/diaries/new";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "日記の保存に失敗しました");
+            return "redirect:/diaries/new";
+        }
+        
         return "redirect:/diaries";
     }
 
@@ -84,12 +110,29 @@ public class DiaryController {
     // 編集フォーム表示
     // -------------------------------
     @GetMapping("/{id}/edit")
-    public String editForm(@PathVariable Long id, Model model) {
+    public String editForm(@PathVariable Long id, 
+                          @AuthenticationPrincipal UserDetailsImpl userDetails,
+                          Model model,
+                          RedirectAttributes redirectAttributes) {
+        
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+        
         Optional<Diary> opt = diaryRepository.findById(id);
         if (opt.isEmpty()) {
+            redirectAttributes.addFlashAttribute("error", "日記が見つかりません");
             return "redirect:/diaries";
         }
-        model.addAttribute("diary", opt.get());
+        
+        Diary diary = opt.get();
+        // 自分の日記かチェック
+        if (!diary.getUser().getId().equals(userDetails.getUser().getId())) {
+            redirectAttributes.addFlashAttribute("error", "他のユーザーの日記は編集できません");
+            return "redirect:/diaries";
+        }
+        
+        model.addAttribute("diary", diary);
         return "diaries/diary-edit";
     }
 
@@ -99,42 +142,80 @@ public class DiaryController {
     @PostMapping("/{id}/update")
     public String update(@PathVariable Long id,
                          @ModelAttribute Diary form,
+                         @AuthenticationPrincipal UserDetailsImpl userDetails,
                          @RequestParam(value = "photoFile", required = false) MultipartFile photo,
-                         @RequestParam(value = "removePhoto", required = false) String removePhotoFlag) throws IOException {
-
-        Diary diary = diaryRepository.findById(id).orElseThrow();
-        diary.setContent(form.getContent());
-        diary.setDiaryDate(form.getDiaryDate() != null ? form.getDiaryDate() : diary.getDiaryDate());
-
-        if ("on".equals(removePhotoFlag) && diary.getPhotoFilename() != null) {
-            fileStorageService.delete(diary.getPhotoFilename());
-            diary.setPhotoFilename(null);
+                         @RequestParam(value = "removePhoto", required = false) String removePhotoFlag,
+                         RedirectAttributes redirectAttributes) {
+        
+        if (userDetails == null) {
+            return "redirect:/login";
         }
 
-        if (photo != null && !photo.isEmpty()) {
-            if (diary.getPhotoFilename() != null) {
-                fileStorageService.delete(diary.getPhotoFilename());
+        try {
+            Diary diary = diaryRepository.findById(id).orElseThrow();
+            
+            // 自分の日記かチェック
+            if (!diary.getUser().getId().equals(userDetails.getUser().getId())) {
+                redirectAttributes.addFlashAttribute("error", "他のユーザーの日記は編集できません");
+                return "redirect:/diaries";
             }
-            String filename = fileStorageService.store(photo);
-            diary.setPhotoFilename(filename);
-        }
+            
+            diary.setContent(form.getContent());
+            diary.setDiaryDate(form.getDiaryDate() != null ? form.getDiaryDate() : diary.getDiaryDate());
 
-        diaryRepository.save(diary);
-        return "redirect:/diaries/" + id;
+            if ("on".equals(removePhotoFlag) && diary.getPhotoFilename() != null) {
+                fileStorageService.delete(diary.getPhotoFilename());
+                diary.setPhotoFilename(null);
+            }
+
+            if (photo != null && !photo.isEmpty()) {
+                if (diary.getPhotoFilename() != null) {
+                    fileStorageService.delete(diary.getPhotoFilename());
+                }
+                String filename = fileStorageService.store(photo);
+                diary.setPhotoFilename(filename);
+            }
+
+            diaryRepository.save(diary);
+            redirectAttributes.addFlashAttribute("success", "日記を更新しました");
+            return "redirect:/diaries/" + id;
+            
+        } catch (IOException e) {
+            redirectAttributes.addFlashAttribute("error", "写真の処理に失敗しました");
+            return "redirect:/diaries/" + id + "/edit";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "日記の更新に失敗しました");
+            return "redirect:/diaries/" + id + "/edit";
+        }
     }
 
     // -------------------------------
     // 削除処理
     // -------------------------------
     @PostMapping("/{id}/delete")
-    public String delete(@PathVariable Long id) {
+    public String delete(@PathVariable Long id,
+                        @AuthenticationPrincipal UserDetailsImpl userDetails,
+                        RedirectAttributes redirectAttributes) {
+        
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+        
         Optional<Diary> opt = diaryRepository.findById(id);
         if (opt.isPresent()) {
             Diary d = opt.get();
+            
+            // 自分の日記かチェック
+            if (!d.getUser().getId().equals(userDetails.getUser().getId())) {
+                redirectAttributes.addFlashAttribute("error", "他のユーザーの日記は削除できません");
+                return "redirect:/diaries";
+            }
+            
             if (d.getPhotoFilename() != null) {
                 fileStorageService.delete(d.getPhotoFilename());
             }
             diaryRepository.delete(d);
+            redirectAttributes.addFlashAttribute("success", "日記を削除しました");
         }
         return "redirect:/diaries";
     }
