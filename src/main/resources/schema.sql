@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS todos (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,  -- ✅ 追加
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE  -- ✅ 追加
 );
 
 -- diaries テーブル作成(user_id, diary_date, photo_filename追加)
