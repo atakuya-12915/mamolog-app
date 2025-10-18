@@ -9,4 +9,10 @@ public class AuthController {
     public String login() {        
         return "auth/login";
     }
+    
+    // ログアウト後のリダイレクト先
+    @GetMapping("/logout")
+    public String logout() {
+        return "redirect:/login?logout";
+    }
 }

@@ -29,13 +29,14 @@
 					<li><a th:href="@{/diaries/new}" class="nav-link">日記登録</a></li>
 					<li><a th:href="@{/calendar}" class="nav-link">カレンダー</a></li>
 					<li><a th:href="@{/mypage}" class="nav-link">マイページ</a></li>
+					<li><a th:href="@{/logout}" class="nav-link">ログアウト</a>
 				</ul>
 			</nav>
 
 			<!-- ロゴ（文字で表現） -->
 			<div class="title">
 				<span class="mamolog-logo"
-					style="font-family: 'Carter One', cursive; font-size: 1.4rem; color: #333;">まもログ 🐥</span>
+					style="font-family: 'Carter One', cursive; font-size: 1.4rem; color: #333;">まもログ🐥</span>
 			</div>
 		</header>
 	</div>
@@ -49,16 +50,40 @@
 				th:href="@{/calendar}">カレンダー</a>
 		</nav>
 	</div>
+	
+	<!-- ログイン状態に応じて表示切り替え -->
+    <div sec:authorize="isAuthenticated()">
+        <form th:action="@{/logout}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-sm btn-outline-secondary" 
+                    style="border-radius:18px; padding:6px 14px; font-size:13px;">
+                ログアウト
+            </button>
+        </form>
+    </div>
+    <div sec:authorize="!isAuthenticated()">
+        <a th:href="@{/login}" class="btn btn-sm btn-outline-primary" 
+           style="border-radius:18px; padding:6px 14px; font-size:13px; text-decoration:none;">
+            ログイン
+        </a>
+    </div>
 
-	<!-- フッター部品 -->
-	<div th:fragment="footer" th:remove="tag">
+	<!-- フッター fragment -->
+	<div th:fragment="footer">
+		<!-- ボトムナビ -->
+		<div class="bottom-nav">
+			<a th:href="@{/home}" class="bn-item">🏠 ホーム</a>
+			<a th:href="@{/todos}" class="bn-item">✓ Todo</a>
+			<a th:href="@{/diaries}" class="bn-item">📔 日記</a>
+			<a th:href="@{/calendar}" class="bn-item">📅 カレンダー</a>
+		</div>
+
+		<!-- コピーライト -->
 		<footer class="footer">
 			<p style="text-align:center; color:#888; font-size:0.9rem;">
 				© 2025 まもログ
 			</p>
 		</footer>
 	</div>
-
 
 	<!-- スクリプト -->
 	<div th:fragment="scripts" th:remove="tag">

@@ -32,6 +32,11 @@
 									<p class="text-muted small mb-2">※注意：このサイトはテスト用サイトです</p>
 								</div>
 
+								<!-- ログアウト成功メッセージ -->
+								<div th:if="${param.logout}" class="alert alert-success small">
+									ログアウトしました
+								</div>
+
 								<!-- 成功メッセージ -->
 								<div th:if="${success}" class="alert alert-success small">
 									<span th:text="${success}"></span>
@@ -69,7 +74,7 @@
 									<div class="text-center mt-3">
 										<p class="small text-muted mb-0">
 											アカウントをお持ちでないですか？
-											<a th:href="@{/register}" class="text-decoration-none">新規登録</a>
+											<br><a th:href="@{/register}" class="text-decoration-none">新規登録</a>
 										</p>
 									</div>
 								</form>
