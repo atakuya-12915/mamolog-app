@@ -1,7 +1,7 @@
 -- =====================================
 -- roles テーブル（既存の ID に合わせて挿入）
 -- =====================================
-INSERT INTO roles (id, name) VALUES
+INSERT IGNORE INTO roles (id, name) VALUES
 (1, 'admin'),
 (2, 'user');
 
@@ -16,9 +16,9 @@ INSERT INTO users (id, name, email, password, role_id) VALUES
 -- categories テーブル（既存の ID に合わせて挿入）
 -- =====================================
 INSERT INTO categories (id, name) VALUES
-(1, '仕事'),
-(2, '育児'),
-(3, '家事');
+(1, '育児'),
+(2, '家事'),
+(3, '仕事');
 
 -- =====================================
 -- todos テーブル
