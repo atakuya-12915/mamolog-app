@@ -9,8 +9,8 @@ INSERT IGNORE INTO roles (id, name) VALUES
 -- users テーブル（既存の ID に合わせて挿入）
 -- =====================================
 INSERT INTO users (id, name, email, password, role_id) VALUES
-(1, 'パパ', 'papa@example.com', 'password', 2),
-(2, 'ママ', 'mama@example.com', 'password', 2);
+(1, 'パパ', 'papa@mamolog.com', 'password', 2),
+(2, 'ママ', 'mama@mamolog.com', 'password', 2);
 
 -- =====================================
 -- categories テーブル（既存の ID に合わせて挿入）

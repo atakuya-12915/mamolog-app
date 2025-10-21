@@ -28,11 +28,14 @@ body{
 
 .topbar{
   display:flex;
-  justify-content:space-around;
+  justify-content:space-between;
   align-items:center;
   padding:14px 18px;
-  background:transparent;
+  background:#fff;
   border-bottom:1px solid rgba(0,0,0,0.06);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .topbar .title{
@@ -44,9 +47,55 @@ body{
 .main-area{
   flex:1;
   padding:16px;
+  padding-bottom:80px;
   max-width:900px;
   margin:0 auto;
   width:100%;
+}
+
+/* ================================================
+   ヘッダーのログイン/ログアウトボタン (修正①)
+   ================================================ */
+.header-actions {
+  display: flex;
+  align-items: center;
+}
+
+/* ログアウトボタン: 初期状態で視認可能に */
+.btn-logout {
+  background: var(--accent-2);
+  border: 1px solid var(--accent);
+  color: var(--text);
+  border-radius: 18px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-logout:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ログインボタン: 初期状態で視認可能に */
+.btn-login {
+  text-decoration: none;
+  background: var(--accent-2);
+  border: 1px solid var(--accent);
+  color: var(--text);
+  border-radius: 18px;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.btn-login:hover {
+  background: var(--accent);
+  color: #fff;
 }
 
 /* タブ */
@@ -66,7 +115,6 @@ body{
   cursor:pointer;
 }
 
-
 .tab-content.active {
     display: block;
 }
@@ -82,12 +130,15 @@ body{
   display: none;
 }
 
-/* controls */
+/* ================================================
+   controls (検索・新規作成ボタン)
+   ================================================ */
 .controls{
   display:flex;
   justify-content:space-between;
   align-items:center;
   margin-bottom:10px;
+  gap: 8px;
 }
 
 .controls input[type="search"]{
@@ -95,6 +146,133 @@ body{
   border-radius:8px;
   border:1px solid rgba(0,0,0,0.06);
   width:220px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* 検索フォーム */
+.search-form {
+  display: flex;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+}
+
+.search-form input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ボタンスタイル統一 */
+.btn {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.1);
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  background: var(--accent-2);
+  border-color: var(--accent);
+}
+
+/* 新規作成ボタン: 初期状態で視認可能に (修正②) */
+.btn-create {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  text-decoration: none;
+  display: inline-block;
+  font-weight: 600;
+  padding: 8px 16px;
+}
+
+.btn-create:hover {
+  background: var(--accent-2);
+  color: var(--text);
+  border: 1px solid var(--accent);
+}
+
+/* ================================================
+   並び替えセクション (修正③ - 統一スタイル)
+   ================================================ */
+.sort-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+}
+
+.sort-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.sort-label {
+  font-weight: 600;
+  color: var(--text);
+  margin-right: 4px;
+}
+
+.sort-link {
+  color: var(--muted);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.sort-link:hover {
+  background: var(--card);
+  color: var(--text);
+}
+
+.sort-link.active {
+  background: var(--accent-2);
+  border-color: var(--accent);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.sort-separator {
+  color: var(--muted);
+  margin: 0 4px;
+}
+
+.date-filter {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.date-input {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.1);
+  font-size: 14px;
+}
+
+.btn-date {
+  padding: 8px 12px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.btn-search {
+  white-space: nowrap;
 }
 
 /* タスクリスト（共通） */
@@ -128,10 +306,12 @@ body{
   display:flex;
   align-items:flex-start;
   gap:12px;
+  flex: 1;
 }
 
 .todo-body{
   min-width:0;
+  flex: 1;
 }
 
 .todo-title{
@@ -156,6 +336,7 @@ body{
   display:inline-block;
   vertical-align:middle;
   cursor:pointer;
+  flex-shrink: 0;
 }
 
 .chk input:checked + .fakebox{
@@ -196,6 +377,7 @@ body{
   display:flex;
   align-items:center;
   gap:12px;
+  flex-wrap: wrap;
 }
 
 #toggle-completed-btn{
@@ -205,6 +387,11 @@ body{
   border:1px solid rgba(0,0,0,0.06);
   background:#fff;
   cursor:pointer;
+  font-size: 14px;
+}
+
+#toggle-completed-btn:hover {
+  background: var(--accent-2);
 }
 
 /* 編集リンク */
@@ -214,10 +401,19 @@ body{
   text-decoration:none;
   margin-top:5px;
   display:inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
 }
 
 .edit-link:hover{
+  background: rgba(0,123,255,0.1);
   text-decoration:underline;
+}
+
+.todo-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 /* 縦並び（付箋風） */
@@ -242,17 +438,17 @@ body{
 }
 
 /* 完了タスク（付箋風・緑色） */
-.todo-card.completed, /* todo-list.html 側で完了に class="completed" */
-.todo-card.done {     /* index.html 側で完了に class="done" */
-  background: #d4f7d4; /* 薄緑背景 */
-  border-left: 6px solid #6cc070; /* 緑のアクセント */
+.todo-card.completed,
+.todo-card.done {
+  background: #d4f7d4;
+  border-left: 6px solid #6cc070;
   opacity: 0.9;
   text-decoration: line-through;
 }
 
 /* チェックボックス：完了時も緑に */
 .chk input:checked + .fakebox {
-  background: var(--accent); /* 未完了は元の色 */
+  background: var(--accent);
 }
 
 /* 完了タスクのタブ色 */
@@ -262,6 +458,181 @@ body{
   color: #333;
 }
 
+/* ================================================
+   サイドメニュー (修正④)
+   ================================================ */
+.menu-btn{
+  font-size:1.5rem;
+  background:transparent;
+  border:none;
+  color:var(--accent);
+  cursor:pointer;
+  padding: 4px 8px;
+}
+
+.menu-btn:hover {
+  background: var(--accent-2);
+  border-radius: 6px;
+}
+
+.side-menu{
+  position:fixed;
+  top:0;
+  left:-250px;
+  width:240px;
+  height:100%;
+  background:var(--accent-2);
+  padding-top:4rem;
+  transition:left 0.3s ease;
+  z-index: 1001;
+  box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+}
+
+.side-menu.active{
+  left:0;
+}
+
+.side-menu ul{
+  list-style:none;
+  padding:0;
+  margin: 0;
+}
+
+.side-menu li{
+  margin:0;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.side-menu a,
+.nav-link{
+  text-decoration:none;
+  color:var(--text);
+  display: block;
+  padding: 1rem 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.side-menu a:hover,
+.nav-link:hover {
+  background: rgba(255,255,255,0.3);
+  padding-left: 2rem;
+}
+
+/* サイドメニュー閉じるボタン */
+.side-menu-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 2rem;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.side-menu-close:hover {
+  background: rgba(0,0,0,0.1);
+}
+
+/* サイドメニューのログアウト */
+.side-menu-logout {
+  border-top: 2px solid rgba(0,0,0,0.1);
+  margin-top: 1rem;
+}
+
+.nav-link-btn {
+  background: none;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  text-decoration: none;
+  display: block;
+  transition: all 0.2s ease;
+}
+
+.nav-link-btn:hover {
+  background: rgba(255,255,255,0.3);
+  padding-left: 2rem;
+}
+
+/* メニューオーバーレイ */
+.menu-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.menu-overlay.active {
+  display: block;
+}
+
+/* ================================================
+   昨日の日記セクション
+   ================================================ */
+.yesterday-diary {
+  margin-top: 24px;
+  padding: 16px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.yesterday-diary h3 {
+  font-size: 16px;
+  color: var(--text);
+  margin-bottom: 12px;
+}
+
+.diary-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.diary-preview p {
+  color: var(--muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.diary-image img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-view-diary {
+  align-self: flex-start;
+  padding: 8px 16px;
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.btn-view-diary:hover {
+  background: var(--accent-2);
+  color: var(--text);
+}
 
 /* ページネーション */
 .pagination{
@@ -292,57 +663,44 @@ body{
   pointer-events:none;
 }
 
-/* フッター */
+/* ================================================
+   フッター (修正⑤ - スクロール固定)
+   ================================================ */
 .bottom-nav{
-  display:flex;
-  justify-content:space-around;
-  padding:10px;
-  border-top:1px solid rgba(0,0,0,0.06);
-  background:#fff;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  padding: 8px 10px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  background: #fff;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+  z-index: 100;
 }
 
 .bn-item{
-  text-decoration:none;
-  color:var(--muted);
-  font-size:15px;
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: all 0.2s ease;
+  padding: 4px 8px;
+  border-radius: 8px;
 }
 
-/* サイドメニュー */
-.menu-btn{
-  font-size:1.5rem;
-  background:transparent;
-  border:none;
-  color:var(--accent);
-  cursor:pointer;
+.bn-item span {
+  font-size: 10px;
 }
 
-.side-menu{
-  position:fixed;
-  top:0;
-  left:-220px;
-  width:200px;
-  height:100%;
-  background:var(--accent-2);
-  padding-top:4rem;
-  transition:left 0.3s ease;
-}
-
-.side-menu.active{
-  left:0;
-}
-
-.side-menu ul{
-  list-style:none;
-  padding:0;
-}
-
-.side-menu li{
-  margin:1rem;
-}
-
-.side-menu a{
-  text-decoration:none;
-  color:var(--text);
+.bn-item:hover,
+.bn-item:active {
+  color: var(--accent);
+  background: var(--accent-2);
 }
 
 /* ===== ログイン画面（モダン） ===== */
@@ -350,9 +708,6 @@ body{
   --bg-gradient-start: #fffaf7;
   --bg-gradient-end: #fff6f2;
   --card-surface: rgba(255,255,255,0.88);
-  --accent: #ff8a66;
-  --accent-2: #ffb199;
-  --muted: #6d6d6d;
   --glass-border: rgba(255,138,102,0.12);
 }
 
@@ -364,9 +719,9 @@ body {
   -webkit-font-smoothing:antialiased;
 }
 
-/* 画面中央に配置（ヘッダー・フッターがある場合は adjust する） */
+/* 画面中央に配置 */
 .login-viewport{
-  min-height: calc(100vh - 120px); /* header/footer の高さに合わせて調整 */
+  min-height: calc(100vh - 120px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -390,7 +745,11 @@ body {
 }
 
 /* ロゴ・見出し */
-.login-card h1 { letter-spacing: 0.2px; font-weight:700; color: #222; }
+.login-card h1 { 
+  letter-spacing: 0.2px; 
+  font-weight:700; 
+  color: #222; 
+}
 
 /* ボタン（グラデ・丸め） */
 .mamolog-btn {
@@ -402,6 +761,7 @@ body {
   border: none;
   transition: transform .12s ease, box-shadow .12s ease;
 }
+
 .mamolog-btn:hover,
 .mamolog-btn:focus {
   transform: translateY(-2px);
@@ -416,6 +776,7 @@ body {
   padding: 1.05rem 0.9rem;
   height: auto;
 }
+
 .form-floating > .form-control:focus {
   border-color: rgba(255,138,102,0.9);
   box-shadow: 0 6px 22px rgba(255,138,102,0.08);
@@ -430,20 +791,153 @@ body {
   padding: 0.6rem 0.75rem;
 }
 
-/* 小画面微調整 */
-@media (max-width: 576px) {
-  .login-card { border-radius: 12px; }
-  .login-viewport { padding: 1.2rem; min-height: calc(100vh - 100px); }
+/* ================================================
+   レスポンシブ: タブレット以上
+   ================================================ */
+@media (min-width: 768px) {
+  .topbar {
+    padding: 14px 24px;
+  }
+  
+  .main-area {
+    padding: 24px;
+    padding-bottom: 24px;
+  }
+  
+  .controls {
+    gap: 10px;
+  }
+  
+  .search-form input {
+    width: 300px;
+  }
+  
+  .sort-options {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .date-filter {
+    width: auto;
+  }
+  
+  .yesterday-diary {
+    padding: 20px;
+  }
+  
+  .diary-image img {
+    max-width: 400px;
+  }
+  
+  /* タブレット以上ではフッターを下固定解除 */
+  .bottom-nav {
+    position: static;
+    box-shadow: none;
+  }
+  
+  .main-area {
+    padding-bottom: 24px;
+  }
 }
 
-
-/* レスポンシブ（小さ目） */
-@media (max-width:520px){
-  .main-area{
-    padding:12px;
+/* ================================================
+   レスポンシブ: PC
+   ================================================ */
+@media (min-width: 1024px) {
+  .main-area {
+    max-width: 1000px;
+    padding: 32px;
   }
-  .todo-card{
-    width:100%;
-    padding:10px;
+  
+  .controls input[type="search"] {
+    width: 350px;
+  }
+  
+  .yesterday-diary {
+    padding: 24px;
+  }
+  
+  .diary-preview {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  
+  .diary-image {
+    flex-shrink: 0;
+  }
+}
+
+/* ================================================
+   レスポンシブ: 小画面
+   ================================================ */
+@media (max-width: 520px) {
+  .topbar {
+    padding: 12px 14px;
+  }
+  
+  .topbar .title {
+    font-size: 16px;
+  }
+  
+  .controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .search-form {
+    width: 100%;
+  }
+  
+  .btn-create {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .sort-links {
+    font-size: 12px;
+  }
+  
+  .sort-link {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  
+  .todo-card {
+    padding: 10px;
+  }
+  
+  .todo-title {
+    font-size: 14px;
+  }
+  
+  .todo-meta {
+    font-size: 11px;
+  }
+}
+
+/* ================================================
+   レスポンシブ: 超小画面
+   ================================================ */
+@media (max-width: 360px) {
+  .bn-item {
+    font-size: 18px;
+    padding: 2px 4px;
+  }
+  
+  .bn-item span {
+    font-size: 9px;
+  }
+}
+
+/* 小画面微調整 */
+@media (max-width: 576px) {
+  .login-card { 
+    border-radius: 12px; 
+  }
+  
+  .login-viewport { 
+    padding: 1.2rem; 
+    min-height: calc(100vh - 100px); 
   }
 }

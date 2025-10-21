@@ -1,161 +1,183 @@
-document.addEventListener("DOMContentLoaded", function() {
+// ================================================
+// app.js - まもログ 共通JavaScript
+// ================================================
 
-	// -------------------------
-	// ハンバーガーメニュー
-	// -------------------------
-	const menuToggle = document.querySelector("#menu-toggle");
-	const sideMenu = document.querySelector("#side-menu");
-	const overlay = document.createElement("div");
-	overlay.id = "overlay";
-	document.body.appendChild(overlay);
-
-	if (menuToggle) {
-		menuToggle.addEventListener("click", () => {
-			sideMenu?.classList.toggle("active");
-			overlay.classList.toggle("active");
-		});
-	}
-
-	document.querySelectorAll(".nav-link").forEach(link => {
-		link.addEventListener("click", e => {
-			const href = link.getAttribute("href");
-			if (href.startsWith("#")) e.preventDefault();
-			sideMenu?.classList.remove("active");
-			overlay.classList.remove("active");
-		});
-	});
-
-	overlay.addEventListener("click", () => {
-		sideMenu?.classList.remove("active");
-		overlay.classList.remove("active");
-	});
-
-	// -------------------------
-	// タグボタン選択（Todo作成画面）
-	// -------------------------
-	const tagBtns = document.querySelectorAll('.tag-btn');
-	const tagInput = document.getElementById('tagInput');
-
-	tagBtns.forEach(btn => {
-		if (btn.dataset.tag === tagInput?.value) btn.classList.add('selected');
-
-		btn.addEventListener('click', () => {
-			tagBtns.forEach(b => b.classList.remove('selected'));
-			btn.classList.add('selected');
-			if (tagInput) tagInput.value = btn.dataset.tag;
-		});
-	});
-
-	// -------------------------
-	// 件数更新
-	// -------------------------
-	function updateCounts() {
-		const pendingCountEl = document.getElementById("pending-count");
-		const pendingList = document.getElementById("pending-list");
-		const completedList = document.getElementById("completed-list");
-
-		const pending = pendingList ? pendingList.querySelectorAll(".todo-card").length : 0;
-		const completed = completedList ? completedList.querySelectorAll(".todo-card").length : 0;
-
-		if (pendingCountEl) pendingCountEl.textContent = pending;
-	}
-
-	// -------------------------
-	// カード移動
-	// -------------------------
-	function moveCardToList(card, targetList, markDone) {
-		if (!card || !targetList) return;
-		card.classList.toggle("done", !!markDone);
-		const cb = card.querySelector(".todo-checkbox");
-		if (cb) cb.checked = !!markDone;
-		targetList.appendChild(card);
-		updateCounts();
-	}
-
-	// -------------------------
-	// チェックボックス切替
-	// -------------------------
-	async function handleToggle(id, card, checked) {
-		try {
-			const resp = await fetch(`/todos/${id}/toggle`, { method: "GET" });
-			if (!resp.ok) throw new Error("Network response was not ok");
-
-			const pendingList = document.getElementById("pending-list");
-			const completedList = document.getElementById("completed-list");
-
-			if (checked) moveCardToList(card, completedList, true);
-			else moveCardToList(card, pendingList, false);
-		} catch (err) {
-			console.error(err);
-			alert("更新に失敗しました");
-			const cb = card.querySelector(".todo-checkbox");
-			if (cb) cb.checked = !checked;
-		}
-	}
-
-	// -------------------------
-	// DOM操作（イベント委譲）
-	// -------------------------
-	document.addEventListener("change", function(e) {
-		if (e.target.matches(".todo-checkbox")) {
-			const id = e.target.getAttribute("data-id");
-			const card = e.target.closest(".todo-card");
-			if (!card) return;
-			handleToggle(id, card, e.target.checked);
-		}
-	});
-
-	document.addEventListener("click", function(e) {
-		if (e.target.matches(".edit-link")) {
-			e.preventDefault();
-			const url = e.target.getAttribute("href");
-			window.location.href = url;
-		}
-	});
-
-	// -------------------------
-	// 完了タスク折りたたみ
-	// -------------------------
-	const toggleBtn = document.getElementById("toggle-completed-btn");
-	if (toggleBtn) {
-		toggleBtn.addEventListener("click", function() {
-			const completedSection = document.getElementById("completed-list");
-			if (!completedSection) return;
-			completedSection.classList.toggle("hidden");
-			toggleBtn.textContent = completedSection.classList.contains("hidden") ? "表示する" : "非表示にする";
-		});
-	}
-
-	// -------------------------
-	// タスク内タブ切替（未完了/完了）
-	// -------------------------
-const tabs = document.querySelectorAll('.tab.todo-tab');
-  const todoCards = document.querySelectorAll('.todo-card');
-
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      const target = tab.dataset.tab; // 'pending-tab' または 'completed-tab'
-
-      // タブのアクティブ切替
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-
-      // Todoの表示切替
-      todoCards.forEach(card => {
-        if (target === 'pending-tab' && card.classList.contains('incomplete')) {
-          card.classList.remove('hidden');
-        } else if (target === 'completed-tab' && card.classList.contains('complete')) {
-          card.classList.remove('hidden');
-        } else {
-          card.classList.add('hidden');
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // ================================================
+    // サイドメニュー開閉 (修正④)
+    // ================================================
+    const menuToggle = document.getElementById('menu-toggle');
+    const sideMenu = document.getElementById('side-menu');
+    const menuOverlay = document.getElementById('menu-overlay');
+    const sideMenuClose = document.querySelector('.side-menu-close');
+    
+    // ハンバーガーボタンクリック
+    if (menuToggle) {
+        menuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            toggleMenu();
+        });
+    }
+    
+    // オーバーレイクリック
+    if (menuOverlay) {
+        menuOverlay.addEventListener('click', function() {
+            closeMenu();
+        });
+    }
+    
+    // 閉じるボタンクリック
+    if (sideMenuClose) {
+        sideMenuClose.addEventListener('click', function() {
+            closeMenu();
+        });
+    }
+    
+    // メニューの開閉
+    function toggleMenu() {
+        if (sideMenu && menuOverlay) {
+            const isActive = sideMenu.classList.contains('active');
+            
+            if (isActive) {
+                closeMenu();
+            } else {
+                openMenu();
+            }
         }
-      });
+    }
+    
+    // メニューを開く
+    function openMenu() {
+        if (sideMenu && menuOverlay) {
+            sideMenu.classList.add('active');
+            menuOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+    
+    // メニューを閉じる
+    function closeMenu() {
+        if (sideMenu && menuOverlay) {
+            sideMenu.classList.remove('active');
+            menuOverlay.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+    }
+    
+    // グローバルに公開（fragment.htmlから呼べるように）
+    window.toggleMenu = toggleMenu;
+    
+    
+    // ================================================
+    // Todoチェックボックスのトグル処理
+    // ================================================
+    const checkboxes = document.querySelectorAll('.todo-checkbox');
+    
+    checkboxes.forEach(function(checkbox) {
+        checkbox.addEventListener('change', function() {
+            const todoId = this.getAttribute('data-id');
+            
+            fetch('/todos/' + todoId + '/toggle', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    // 成功したらページをリロード
+                    location.reload();
+                } else {
+                    console.error('Failed to toggle todo');
+                    // エラー時はチェックを元に戻す
+                    this.checked = !this.checked;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // エラー時はチェックを元に戻す
+                this.checked = !this.checked;
+            });
+        });
     });
-  });
+    
+    
+    // ================================================
+    // 完了タスクの折りたたみ
+    // ================================================
+    const toggleBtn = document.getElementById('toggle-completed-btn');
+    const completedList = document.getElementById('completed-list');
+    
+    if (toggleBtn && completedList) {
+        toggleBtn.addEventListener('click', function() {
+            if (completedList.style.display === 'none') {
+                completedList.style.display = 'flex';
+                this.textContent = '非表示にする';
+            } else {
+                completedList.style.display = 'none';
+                this.textContent = '表示する';
+            }
+        });
+    }
+    
+    
+    // ================================================
+    // 検索キーワードのハイライト (オプション)
+    // ================================================
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const keyword = this.value.toLowerCase();
+            const todoCards = document.querySelectorAll('.todo-card');
+            
+            todoCards.forEach(function(card) {
+                const title = card.querySelector('.todo-title');
+                const memo = card.querySelector('.todo-meta');
+                
+                if (title) {
+                    const titleText = title.textContent.toLowerCase();
+                    const memoText = memo ? memo.textContent.toLowerCase() : '';
+                    
+                    if (titleText.includes(keyword) || memoText.includes(keyword)) {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = keyword ? 'none' : '';
+                    }
+                }
+            });
+        });
+    }
+    
+    
+    // ================================================
+    // フラッシュメッセージの自動非表示
+    // ================================================
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(function(alert) {
+        setTimeout(function() {
+            alert.style.transition = 'opacity 0.5s ease';
+            alert.style.opacity = '0';
+            setTimeout(function() {
+                alert.remove();
+            }, 500);
+        }, 5000); // 5秒後に自動で消える
+    });
+    
+});
 
-	// -------------------------
-	// 初期件数更新
-	// -------------------------
-	updateCounts();
-
+// ================================================
+// ページ読み込み時のスムーズスクロール
+// ================================================
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
 });

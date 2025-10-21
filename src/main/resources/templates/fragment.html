@@ -1,94 +1,119 @@
 <!DOCTYPE html>
-<html xmlns:th="https://www.thymeleaf.org">
-
+<html xmlns:th="https://www.thymeleaf.org" 
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
 	<!-- meta要素 -->
 	<div th:fragment="meta" th:remove="tag">
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1">
 	</div>
-
+	
 	<!-- link要素 -->
 	<div th:fragment="styles" th:remove="tag">
 		<link th:href="@{/css/styles.css}" rel="stylesheet">
 	</div>
-
+	
 	<title>まもログ | 共通レイアウト</title>
 </head>
 
 <body>
-	<!-- ヘッダー部品 -->
+	<!-- ================================================
+	     ヘッダー部品
+	     ================================================ -->
 	<div th:fragment="header" th:remove="tag">
 		<header class="topbar">
-			<button id="menu-toggle" class="menu-btn">☰</button>
-
-			<!-- サイドメニュー -->
-			<nav id="side-menu" class="side-menu">
-				<ul>
-					<li><a th:href="@{/todos/new}" class="nav-link">Todo作成</a></li>
-					<li><a th:href="@{/diaries/new}" class="nav-link">日記登録</a></li>
-					<li><a th:href="@{/calendar}" class="nav-link">カレンダー</a></li>
-					<li><a th:href="@{/mypage}" class="nav-link">マイページ</a></li>
-					<li><a th:href="@{/logout}" class="nav-link">ログアウト</a>
-				</ul>
-			</nav>
-
-			<!-- ロゴ（文字で表現） -->
+			<!-- ハンバーガーメニューボタン -->
+			<button id="menu-toggle" class="menu-btn" onclick="toggleMenu()">☰</button>
+			
+			<!-- ロゴ -->
 			<div class="title">
-				<span class="mamolog-logo"
-					style="font-family: 'Carter One', cursive; font-size: 1.4rem; color: #333;">まもログ🐥</span>
+				<a th:href="@{/home}" style="text-decoration:none; color:inherit;">
+					<span class="mamolog-logo">まもログ 🐥</span>
+				</a>
+			</div>
+			
+			<!-- ログイン状態に応じて表示切り替え -->
+			<div class="header-actions">
+				<!-- ログイン済み: ログアウトボタン -->
+				<div sec:authorize="isAuthenticated()">
+					<form th:action="@{/logout}" method="post" style="display:inline;">
+						<button type="submit" class="btn-logout">
+							ログアウト
+						</button>
+					</form>
+				</div>
+				
+				<!-- 未ログイン: ログインリンク -->
+				<div sec:authorize="!isAuthenticated()">
+					<a th:href="@{/login}" class="btn-login">
+						ログイン
+					</a>
+				</div>
 			</div>
 		</header>
+		
+		<!-- サイドメニュー -->
+		<nav id="side-menu" class="side-menu">
+			<button class="side-menu-close" onclick="toggleMenu()">×</button>
+			<ul>
+				<li><a th:href="@{/home}" class="nav-link">🏠 ホーム</a></li>
+				<li><a th:href="@{/todos}" class="nav-link">✓ タスク一覧</a></li>
+				<li><a th:href="@{/todos/new}" class="nav-link">＋ Todo作成</a></li>
+				<li><a th:href="@{/diaries}" class="nav-link">📔 日記一覧</a></li>
+				<li><a th:href="@{/diaries/new}" class="nav-link">✏️ 日記登録</a></li>
+				<li><a th:href="@{/calendar}" class="nav-link">📅 カレンダー</a></li>
+				<li sec:authorize="isAuthenticated()">
+					<a th:href="@{/mypage}" class="nav-link">👤 マイページ</a>
+				</li>
+				<li sec:authorize="isAuthenticated()" class="side-menu-logout">
+					<form th:action="@{/logout}" method="post">
+						<button type="submit" class="nav-link-btn">
+							🚪 ログアウト
+						</button>
+					</form>
+				</li>
+			</ul>
+		</nav>
+		
+		<!-- サイドメニュー背景オーバーレイ -->
+		<div id="menu-overlay" class="menu-overlay" onclick="toggleMenu()"></div>
 	</div>
 
-	<!-- グローバルナビタブ -->
+	<!-- ================================================
+	     グローバルナビタブ
+	     ================================================ -->
 	<div th:fragment="tabnav" th:remove="tag">
 		<nav class="tabbar">
-			<a class="tab nav-tab" th:classappend="${activeTab == 'todo'} ? ' active'" th:href="@{/todos}">タスク一覧</a>
-			<a class="tab nav-tab" th:classappend="${activeTab == 'diary'} ? ' active'" th:href="@{/diaries}">日記一覧</a>
-			<a class="tab nav-tab" th:classappend="${activeTab == 'calendar'} ? ' active'"
-				th:href="@{/calendar}">カレンダー</a>
+			<a class="tab nav-tab" 
+			   th:classappend="${activeTab == 'todo'} ? ' active'" 
+			   th:href="@{/todos}">タスク一覧</a>
+			<a class="tab nav-tab" 
+			   th:classappend="${activeTab == 'diary'} ? ' active'" 
+			   th:href="@{/diaries}">日記一覧</a>
+			<a class="tab nav-tab" 
+			   th:classappend="${activeTab == 'calendar'} ? ' active'"
+			   th:href="@{/calendar}">カレンダー</a>
 		</nav>
 	</div>
-	
-	<!-- ログイン状態に応じて表示切り替え -->
-    <div sec:authorize="isAuthenticated()">
-        <form th:action="@{/logout}" method="post" style="display:inline;">
-            <button type="submit" class="btn btn-sm btn-outline-secondary" 
-                    style="border-radius:18px; padding:6px 14px; font-size:13px;">
-                ログアウト
-            </button>
-        </form>
-    </div>
-    <div sec:authorize="!isAuthenticated()">
-        <a th:href="@{/login}" class="btn btn-sm btn-outline-primary" 
-           style="border-radius:18px; padding:6px 14px; font-size:13px; text-decoration:none;">
-            ログイン
-        </a>
-    </div>
 
-	<!-- フッター fragment -->
-	<div th:fragment="footer">
-		<!-- ボトムナビ -->
-		<div class="bottom-nav">
-			<a th:href="@{/home}" class="bn-item">🏠 ホーム</a>
-			<a th:href="@{/todos}" class="bn-item">✓ Todo</a>
-			<a th:href="@{/diaries}" class="bn-item">📔 日記</a>
-			<a th:href="@{/calendar}" class="bn-item">📅 カレンダー</a>
-		</div>
-
-		<!-- コピーライト -->
-		<footer class="footer">
-			<p style="text-align:center; color:#888; font-size:0.9rem;">
-				© 2025 まもログ
-			</p>
+	<!-- ================================================
+	     フッター部品
+	     ================================================ -->
+	<div th:fragment="footer" th:remove="tag">
+		<footer class="bottom-nav">
+			<a th:href="@{/home}" class="bn-item">🏠<br><span>ホーム</span></a>
+			<a th:href="@{/todos}" class="bn-item">✓<br><span>Todo</span></a>
+			<a th:href="@{/diaries}" class="bn-item">📔<br><span>日記</span></a>
+			<a th:href="@{/calendar}" class="bn-item">📅<br><span>カレンダー</span></a>
 		</footer>
 	</div>
 
-	<!-- スクリプト -->
+	<!-- ================================================
+	     スクリプト
+	     ================================================ -->
 	<div th:fragment="scripts" th:remove="tag">
+		<!-- 共通JavaScript読み込み -->
 		<script th:src="@{/js/app.js}"></script>
 	</div>
 </body>
-
 </html>
