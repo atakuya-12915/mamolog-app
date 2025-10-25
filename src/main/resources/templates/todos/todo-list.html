@@ -20,7 +20,7 @@
 			     検索フォーム / 新規作成
 			     ========================= -->
 			<section class="controls">
-				<form th:action="@{/todos/search}" method="get" class="search-form">
+				<form th:action="@{/todos}" method="get" class="search-form">
 					<input id="searchInput" 
 					       type="search" 
 					       name="keyword" 
@@ -32,148 +32,184 @@
 			</section>
 
 			<!-- =========================
-			     並び替え / 日付指定 (index.htmlと統一)
+			     並び替え / 日付指定
 			     ========================= -->
 			<section class="sort-options">
 				<div class="sort-links">
 					<span class="sort-label">並び替え:</span>
-					<a th:href="@{/todos/sort(sortBy='account')}"
+					<a th:href="@{/todos(sortBy='account')}"
 					   th:classappend="${sortBy == 'account'} ? ' active'" 
 					   class="sort-link">担当者順</a>
 					<span class="sort-separator">|</span>
-					<a th:href="@{/todos/sort(sortBy='category')}"
+					<a th:href="@{/todos(sortBy='category')}"
 					   th:classappend="${sortBy == 'category'} ? ' active'" 
 					   class="sort-link">カテゴリ順</a>
 					<span class="sort-separator">|</span>
-					<a th:href="@{/todos/sort(sortBy='dueDate')}"
+					<a th:href="@{/todos(sortBy='dueDate')}"
 					   th:classappend="${sortBy == 'dueDate'} ? ' active'" 
 					   class="sort-link">日付順</a>
 				</div>
 				
-				<form th:action="@{/todos/sort}" method="get" class="date-filter">
+				<form th:action="@{/todos}" method="get" class="date-filter">
 					<input type="date" name="date" th:value="${date}" class="date-input">
 					<button type="submit" class="btn btn-date">日付表示</button>
 				</form>
 			</section>
 
 			<!-- =========================
-			     Todo一覧
+			     タブ切替（未完了/完了）
 			     ========================= -->
-			<section id="tab-content">
-				<div id="todo" class="tab-pane active">
+			<section class="tabbar">
+				<button class="tab todo-tab active" data-tab="pending-tab">
+					未完了 (<span th:text="${incompleteTodos.totalElements}">0</span>)
+				</button>
+				<button class="tab todo-tab" data-tab="completed-tab">
+					完了済 (<span th:text="${completedTodos.totalElements}">0</span>)
+				</button>
+			</section>
 
-					<!-- ヘッダー：未完了件数 -->
-					<section class="todo-header">
-						<h1>Todo一覧</h1>
-						<div class="remaining">
-							残り：<span id="pending-count" 
-							           th:text="${todoList != null ? todoList.size() : 0}">0</span> 件
+			<!-- =========================
+			     未完了タブ
+			     ========================= -->
+			<section id="pending-tab" class="tab-content">
+				<div class="todo-list vertical">
+					<li th:each="todo : ${incompleteTodos.content}" 
+					    class="todo-card" 
+					    th:attr="data-id=${todo.id}">
+
+						<div class="todo-main">
+							<label class="chk">
+								<input type="checkbox" 
+								       class="todo-checkbox" 
+								       th:attr="data-id=${todo.id}" />
+								<span class="fakebox"></span>
+							</label>
+
+							<div class="todo-body">
+								<div class="todo-title">
+									<span th:text="${todo.title}">タイトル</span>
+									<span class="assignee" 
+									      th:if="${todo.account != null}"
+									      th:text="${todo.account}"
+									      th:classappend="${todo.account == 'ぱぱ'} ? ' papa' : ' mama'">
+									</span>
+								</div>
+
+								<div class="todo-meta" 
+								     th:if="${todo.memo != null and !#strings.isEmpty(todo.memo)}" 
+								     th:text="${todo.memo}">メモ</div>
+
+								<div class="todo-meta" th:if="${todo.category != null}">
+									カテゴリ: <span th:text="${todo.category.name}">カテゴリ名</span>
+								</div>
+
+								<div class="todo-meta" th:if="${todo.dueDate != null}">
+									期限:
+									<span th:text="${#temporals.format(todo.dueDate, 'yyyy-MM-dd')}">yyyy-MM-dd</span>
+									<span th:if="${todo.dueTime != null}" 
+									      th:text="${#temporals.format(todo.dueTime, 'HH:mm')}">HH:mm</span>
+								</div>
+							</div>
 						</div>
-					</section>
 
-					<!-- 未完了リスト -->
-					<section class="todo-list vertical" id="pending-list">
-						<li th:each="todo : ${todoList}" 
-						    class="todo-card" 
-						    th:attr="data-id=${todo.id}">
+						<div class="todo-actions">
+							<a th:href="@{/todos/{id}/edit(id=${todo.id})}" class="edit-link">編集</a>
+						</div>
+					</li>
+				</div>
 
-							<div class="todo-main">
-								<!-- チェックボックス -->
-								<label class="chk">
-									<input type="checkbox" 
-									       class="todo-checkbox" 
-									       th:attr="data-id=${todo.id}"
-									       th:checked="${todo.completed} ? 'checked' : null" />
-									<span class="fakebox"></span>
-								</label>
+				<!-- 未完了のページネーション -->
+				<div class="pagination" th:if="${incompleteTodos.totalPages > 1}">
+					<a th:href="@{/todos(incompletePage=0)}" 
+					   th:classappend="${incompleteTodos.number == 0} ? 'disabled'">&laquo; 最初</a>
+					
+					<a th:href="@{/todos(incompletePage=${incompleteTodos.number - 1})}" 
+					   th:classappend="${incompleteTodos.number == 0} ? 'disabled'">&lt; 前へ</a>
+					
+					<span th:each="i : ${#numbers.sequence(0, incompleteTodos.totalPages - 1)}">
+						<a th:href="@{/todos(incompletePage=${i})}" 
+						   th:text="${i + 1}"
+						   th:classappend="${i == incompleteTodos.number} ? 'active'">1</a>
+					</span>
+					
+					<a th:href="@{/todos(incompletePage=${incompleteTodos.number + 1})}" 
+					   th:classappend="${incompleteTodos.number + 1 >= incompleteTodos.totalPages} ? 'disabled'">次へ &gt;</a>
+					
+					<a th:href="@{/todos(incompletePage=${incompleteTodos.totalPages - 1})}" 
+					   th:classappend="${incompleteTodos.number + 1 >= incompleteTodos.totalPages} ? 'disabled'">最後 &raquo;</a>
+				</div>
+			</section>
 
-								<!-- タスク内容 -->
-								<div class="todo-body">
-									<div class="todo-title">
-										<span th:text="${todo.title}">タイトル</span>
-										<span class="assignee" 
-										      th:if="${todo.account != null}"
-										      th:text="${todo.account}"
-										      th:classappend="${todo.account == 'ぱぱ'} ? ' papa' : ' mama'">
-										</span>
-									</div>
-
-									<div class="todo-meta" 
-									     th:if="${todo.memo != null and !#strings.isEmpty(todo.memo)}" 
-									     th:text="${todo.memo}">メモ</div>
-
-									<div class="todo-meta" th:if="${todo.category != null}">
-										カテゴリ: <span th:text="${todo.category.name}">カテゴリ名</span>
-									</div>
-
-									<div class="todo-meta" th:if="${todo.dueDate != null}">
-										期限:
-										<span th:text="${#temporals.format(todo.dueDate, 'yyyy-MM-dd')}">yyyy-MM-dd</span>
-										<span th:if="${todo.dueTime != null}" 
-										      th:text="${#temporals.format(todo.dueTime, 'HH:mm')}">HH:mm</span>
-									</div>
+			<!-- =========================
+			     完了タブ
+			     ========================= -->
+			<section id="completed-tab" class="tab-content hidden">
+				<div class="todo-list vertical">
+					<li th:each="todo : ${completedTodos.content}" 
+					    class="todo-card done" 
+					    th:attr="data-id=${todo.id}">
+						
+						<div class="todo-main">
+							<label class="chk">
+								<input type="checkbox" 
+								       class="todo-checkbox" 
+								       th:attr="data-id=${todo.id}"
+								       checked />
+								<span class="fakebox"></span>
+							</label>
+							
+							<div class="todo-body">
+								<div class="todo-title">
+									<span th:text="${todo.title}">タイトル</span>
+									<span class="assignee" 
+									      th:if="${todo.account != null}"
+									      th:text="${todo.account}"
+									      th:classappend="${todo.account == 'ぱぱ'} ? ' papa' : ' mama'">
+									</span>
 								</div>
-							</div>
-
-							<!-- 編集リンク -->
-							<div class="todo-actions">
-								<a th:href="@{/todos/{id}/edit(id=${todo.id})}" class="edit-link">編集</a>
-							</div>
-						</li>
-					</section>
-
-					<!-- =========================
-					     完了タスク
-					     ========================= -->
-					<section class="completed-tasks">
-						<h2>
-							完了タスク
-							<button id="toggle-completed-btn" type="button">非表示にする</button>
-						</h2>
-
-						<section class="todo-list vertical" id="completed-list">
-							<li th:each="todo : ${completedList}" 
-							    class="todo-card done" 
-							    th:attr="data-id=${todo.id}">
 								
-								<div class="todo-main">
-									<label class="chk">
-										<input type="checkbox" 
-										       class="todo-checkbox" 
-										       th:attr="data-id=${todo.id}"
-										       checked />
-										<span class="fakebox"></span>
-									</label>
-									
-									<div class="todo-body">
-										<div class="todo-title">
-											<span th:text="${todo.title}">タイトル</span>
-											<span class="assignee" 
-											      th:if="${todo.account != null}"
-											      th:text="${todo.account}"
-											      th:classappend="${todo.account == 'ぱぱ'} ? ' papa' : ' mama'">
-											</span>
-										</div>
-										
-										<div class="todo-meta" 
-										     th:if="${todo.memo != null and !#strings.isEmpty(todo.memo)}" 
-										     th:text="${todo.memo}">メモ</div>
-										
-										<div class="todo-meta" th:if="${todo.category != null}">
-											カテゴリ: <span th:text="${todo.category.name}">カテゴリ名</span>
-										</div>
-										
-										<div class="todo-meta" th:if="${todo.dueDate != null}">
-											期限:
-											<span th:text="${#temporals.format(todo.dueDate, 'yyyy-MM-dd')}">yyyy-MM-dd</span>
-											<span th:if="${todo.dueTime != null}" 
-											      th:text="${#temporals.format(todo.dueTime, 'HH:mm')}">HH:mm</span>
-										</div>
-									</div>
+								<div class="todo-meta" 
+								     th:if="${todo.memo != null and !#strings.isEmpty(todo.memo)}" 
+								     th:text="${todo.memo}">メモ</div>
+								
+								<div class="todo-meta" th:if="${todo.category != null}">
+									カテゴリ: <span th:text="${todo.category.name}">カテゴリ名</span>
 								</div>
-							</li>
-						</section>
-					</section>
+								
+								<div class="todo-meta" th:if="${todo.dueDate != null}">
+									期限:
+									<span th:text="${#temporals.format(todo.dueDate, 'yyyy-MM-dd')}">yyyy-MM-dd</span>
+									<span th:if="${todo.dueTime != null}" 
+									      th:text="${#temporals.format(todo.dueTime, 'HH:mm')}">HH:mm</span>
+								</div>
+							</div>
+						</div>
+						
+						<div class="todo-actions">
+							<a th:href="@{/todos/{id}/edit(id=${todo.id})}" class="edit-link">編集</a>
+						</div>
+					</li>
+				</div>
+
+				<!-- 完了のページネーション -->
+				<div class="pagination" th:if="${completedTodos.totalPages > 1}">
+					<a th:href="@{/todos(completedPage=0)}" 
+					   th:classappend="${completedTodos.number == 0} ? 'disabled'">&laquo; 最初</a>
+					
+					<a th:href="@{/todos(completedPage=${completedTodos.number - 1})}" 
+					   th:classappend="${completedTodos.number == 0} ? 'disabled'">&lt; 前へ</a>
+					
+					<span th:each="i : ${#numbers.sequence(0, completedTodos.totalPages - 1)}">
+						<a th:href="@{/todos(completedPage=${i})}" 
+						   th:text="${i + 1}"
+						   th:classappend="${i == completedTodos.number} ? 'active'">1</a>
+					</span>
+					
+					<a th:href="@{/todos(completedPage=${completedTodos.number + 1})}" 
+					   th:classappend="${completedTodos.number + 1 >= completedTodos.totalPages} ? 'disabled'">次へ &gt;</a>
+					
+					<a th:href="@{/todos(completedPage=${completedTodos.totalPages - 1})}" 
+					   th:classappend="${completedTodos.number + 1 >= completedTodos.totalPages} ? 'disabled'">最後 &raquo;</a>
 				</div>
 			</section>
 
@@ -185,7 +221,6 @@
 
 	<!-- スクリプト -->
 	<div th:replace="~{fragment :: scripts}"></div>
-	<script src="/js/app.js" th:src="@{/js/app.js}"></script>
 </body>
 
 </html>

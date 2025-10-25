@@ -2,11 +2,7 @@ package com.example.mamolog.controller.todo;
 
 import java.time.LocalDate;
 
-import org.springframework.data.domain.Page;                    // ページング情報を扱うクラス
-import org.springframework.data.domain.PageRequest;          	// ページ番号・ページサイズを指定するクラス
-import org.springframework.data.domain.Pageable;              	// ページング用インターフェース
-import org.springframework.data.domain.Sort;                  	// ソート情報を指定するクラス
-import org.springframework.format.annotation.DateTimeFormat;   	// 日付のパラメータ変換用
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,153 +16,171 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.mamolog.entity.Todo;
+import com.example.mamolog.entity.User;
 import com.example.mamolog.security.UserDetailsImpl;
 import com.example.mamolog.service.TodoService;
 
+import lombok.RequiredArgsConstructor;
+
+/**
+ * TodoController - プレゼンテーション層
+ * 役割: HTTPリクエストの処理、ビューへのデータ渡し、バリデーション
+ */
 @Controller
 @RequestMapping("/todos")
+@RequiredArgsConstructor
 public class TodoController {
-
-    private final TodoService todoService; // Service層をDI（依存性注入）で取得
-
-    public TodoController(TodoService todoService) {
-        this.todoService = todoService;  // コンストラクタでServiceをセット
-    }
-
-    /* ───────────────────────────────────────────────
-    	一覧画面（全件ページング + タブ切替用）
-    ─────────────────────────────────────────────── */
-    @GetMapping
-    public String listTodos(
-            @RequestParam(defaultValue = "0") int incompletePage,
-            @RequestParam(defaultValue = "0") int completePage,
-            Model model) {
-
-        // ページング処理
-        Pageable incompletePageable = PageRequest.of(incompletePage, 10, Sort.by("dueDate").ascending());
-        Pageable completePageable = PageRequest.of(completePage, 10, Sort.by("createdAt").descending());
-
-        Page<Todo> incompleteTodos = todoService.getTodosPage(false, incompletePageable);
-        Page<Todo> completeTodos = todoService.getTodosPage(true, completePageable);
-
-        model.addAttribute("incompleteTodos", incompleteTodos);
-        model.addAttribute("completeTodos", completeTodos);
-        model.addAttribute("incompletePage", incompletePage);
-        model.addAttribute("completePage", completePage);
-
-        return "todos/todo-list";
-    }   
     
-    // ────────── 新規作成フォーム表示 ──────────
-    @GetMapping("/new")
-    public String newTodoForm(@RequestParam(required = false) Long categoryId, Model model) {
-        Todo todo = new Todo(); // 新しいTodoオブジェクトを作成
-
-        // カテゴリIDが指定されていた場合はセット
-        if (categoryId != null) {
-            todoService.getCategory(categoryId).ifPresent(todo::setCategory);
+    private final TodoService todoService;
+    
+    // ================================================
+    // 一覧表示（ページネーション・タブ切替対応）
+    // ================================================
+    
+    @GetMapping
+    public String list(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam(defaultValue = "0") int incompletePage,
+            @RequestParam(defaultValue = "0") int completedPage,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String date,
+            Model model) {
+        
+        if (userDetails == null) {
+            return "redirect:/login";
         }
         
-        model.addAttribute("todo", todo);                       // ViewにTodoを渡す
-        model.addAttribute("categories", todoService.getAllCategories()); // カテゴリ一覧
-        return "todos/todo-new"; // 新規作成フォーム
-    }
-
-    // ────────── 新規作成・保存 ──────────
-    @PostMapping
-    public String createTodo(@ModelAttribute Todo todo,
-    						 BindingResult bindingResult,
-                             @RequestParam(required = false) String newCategoryName,
-                             @AuthenticationPrincipal UserDetailsImpl userDetails,
-                             RedirectAttributes redirectAttributes) {
-    	
-    	// フォーム入力でのバリデーション
-    	if (bindingResult.hasErrors()) {
-    	        return "todos/new";		// 入力画面に戻す
-    	    }
-    	
-        todoService.createTodo(todo, newCategoryName, userDetails.getUser());          // Serviceで保存
-        redirectAttributes.addFlashAttribute("message", "Todoを作成しました"); // フラッシュメッセージ
-        return "redirect:/todos";		// 一覧にリダイレクト
-    }
-
-    // ────────── 編集フォーム表示 ──────────
-    @GetMapping("/{id}/edit")
-    public String editTodoForm(@PathVariable Long id, Model model) {
-        model.addAttribute("todo", todoService.getTodo(id));           		// 編集対象をセット
-        model.addAttribute("categories", todoService.getAllCategories()); 	// カテゴリ一覧
-        return "todos/todo-edit"; 		// 編集画面
-    }
-
-    // ────────── 更新 ──────────
-    @PostMapping("/{id}/update")
-    public String updateTodo(@PathVariable Long id,
-                             @ModelAttribute Todo todo,
-                             @RequestParam(value = "newCategoryName", required = false) String newCategoryName,
-                             RedirectAttributes redirectAttributes) {
-        todoService.updateTodo(id, todo, newCategoryName);             // 更新処理
-        redirectAttributes.addFlashAttribute("message", "Todoを更新しました");
-        return "redirect:/todos";                                      // 一覧にリダイレクト
-    }
-
-    // ────────── 削除 ──────────
-    @PostMapping("/{id}/delete")
-    public String deleteTodo(@PathVariable Long id,
-                             RedirectAttributes redirectAttributes) {
-        todoService.deleteTodo(id);                                     // 削除処理
-        redirectAttributes.addFlashAttribute("message", "Todoを削除しました");
-        return "redirect:/todos";                                       // 一覧にリダイレクト
-    }
-
-    // ────────── 完了トグル ──────────
-    @GetMapping("/{id}/toggle")
-    public String toggleTodo(@PathVariable Long id,
-                             RedirectAttributes redirectAttributes) {
-        todoService.toggleTodo(id);                                     // 完了状態を反転
-        redirectAttributes.addFlashAttribute("message", "完了状態を変更しました");
-        return "redirect:/todos";                                       // 一覧にリダイレクト
-    }
-
-    // ────────── キーワード検索 ──────────
-    @GetMapping("/search")
-    public String searchTodos(@RequestParam(name = "keyword", required = false) String keyword,
-                              Model model) {
-        // キーワード検索（未完了/完了別）
-        model.addAttribute("incompleteTodos", todoService.searchTodosPage(keyword, false, PageRequest.of(0, 10)));
-        model.addAttribute("completeTodos", todoService.searchTodosPage(keyword, true, PageRequest.of(0, 10)));
-        model.addAttribute("keyword", keyword); // 入力欄に保持
-        model.addAttribute("incompletePage", 0); // 検索後は1ページ目
-        model.addAttribute("completePage", 0);
-        return "todos/todo-list"; // 一覧画面表示
-    }
-
-    // ────────── ソート + 日付絞り込み ──────────
-    @GetMapping("/sort")
-    public String sortTodos(@RequestParam(required = false) String sortBy,
-                            @RequestParam(required = false)
-                            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-                            @RequestParam(defaultValue = "0") int incompletePage,
-                            @RequestParam(defaultValue = "0") int completePage,
-                            Model model) {
-
-        Pageable incompletePageable = PageRequest.of(incompletePage, 10);
-        Pageable completePageable = PageRequest.of(completePage, 10);
-
-        // 日付指定がある場合は日付で絞り込み
-        if (date != null) {
-            model.addAttribute("incompleteTodos", todoService.getTodosByDatePage(date, false, incompletePageable));
-            model.addAttribute("completeTodos", todoService.getTodosByDatePage(date, true, completePageable));
+        User user = userDetails.getUser();
+        Page<Todo> incompleteTodos;
+        Page<Todo> completedTodos;
+        
+        // 検索処理
+        if (keyword != null && !keyword.isEmpty()) {
+            incompleteTodos = todoService.searchTodos(user, false, keyword, incompletePage, 10);
+            completedTodos = todoService.searchTodos(user, true, keyword, completedPage, 10);
+            model.addAttribute("keyword", keyword);
+        }
+        // 日付フィルタ
+        else if (date != null && !date.isEmpty()) {
+            LocalDate filterDate = LocalDate.parse(date);
+            incompleteTodos = todoService.getTodosByDate(user, false, filterDate, incompletePage, 10);
+            completedTodos = todoService.getTodosByDate(user, true, filterDate, completedPage, 10);
             model.addAttribute("date", date);
-        } else {
-            // 通常のソート処理
-            model.addAttribute("incompleteTodos", todoService.sortTodosPage(sortBy, false, incompletePageable));
-            model.addAttribute("completeTodos", todoService.sortTodosPage(sortBy, true, completePageable));
+        }
+        // ソート処理
+        else if (sortBy != null && !sortBy.isEmpty()) {
+            incompleteTodos = todoService.getTodosSorted(user, false, sortBy, incompletePage, 10);
+            completedTodos = todoService.getTodosSorted(user, true, sortBy, completedPage, 10);
             model.addAttribute("sortBy", sortBy);
         }
-
-        model.addAttribute("incompletePage", incompletePage); // 現在ページ番号
-        model.addAttribute("completePage", completePage);
-
+        // デフォルト（作成日時降順）
+        else {
+            incompleteTodos = todoService.getTodosByUser(user, false, incompletePage, 10);
+            completedTodos = todoService.getTodosByUser(user, true, completedPage, 10);
+        }
+        
+        model.addAttribute("incompleteTodos", incompleteTodos);
+        model.addAttribute("completedTodos", completedTodos);
+        model.addAttribute("incompletePage", incompletePage);
+        model.addAttribute("completedPage", completedPage);
+        
         return "todos/todo-list";
+    }
+    
+    // ================================================
+    // 新規作成
+    // ================================================
+    
+    @GetMapping("/new")
+    public String newForm(Model model) {
+        model.addAttribute("todo", new Todo());
+        model.addAttribute("categories", todoService.getAllCategories());
+        return "todos/todo-new";
+    }
+    
+    @PostMapping
+    public String create(
+            @ModelAttribute Todo todo,
+            BindingResult bindingResult,
+            @RequestParam(required = false) String newCategoryName,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            RedirectAttributes redirectAttributes,
+            Model model) {
+        
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+        
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("categories", todoService.getAllCategories());
+            return "todos/todo-new";
+        }
+        
+        todoService.createTodo(todo, newCategoryName, userDetails.getUser());
+        redirectAttributes.addFlashAttribute("success", "Todoを作成しました");
+        return "redirect:/todos";
+    }
+    
+    // ================================================
+    // 編集
+    // ================================================
+    
+    @GetMapping("/{id}/edit")
+    public String editForm(@PathVariable Long id, Model model) {
+        model.addAttribute("todo", todoService.getTodo(id));
+        model.addAttribute("categories", todoService.getAllCategories());
+        return "todos/todo-edit";
+    }
+    
+    @PostMapping("/{id}/update")
+    public String update(
+            @PathVariable Long id,
+            @ModelAttribute Todo todo,
+            @RequestParam(value = "newCategoryName", required = false) String newCategoryName,
+            RedirectAttributes redirectAttributes) {
+        
+        todoService.updateTodo(id, todo, newCategoryName);
+        redirectAttributes.addFlashAttribute("success", "Todoを更新しました");
+        return "redirect:/todos";
+    }
+    
+    // ================================================
+    // 削除
+    // ================================================
+    
+    @PostMapping("/{id}/delete")
+    public String delete(
+            @PathVariable Long id,
+            RedirectAttributes redirectAttributes) {
+        
+        todoService.deleteTodo(id);
+        redirectAttributes.addFlashAttribute("success", "Todoを削除しました");
+        return "redirect:/todos";
+    }
+    
+    // ================================================
+    // 完了トグル
+    // ================================================
+    
+    @PostMapping("/{id}/toggle")
+    public String toggle(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            RedirectAttributes redirectAttributes) {
+        
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
+        
+        Todo todo = todoService.getTodo(id);
+        
+        if (!todo.getUser().getId().equals(userDetails.getUser().getId())) {
+            redirectAttributes.addFlashAttribute("error", "他のユーザーのTodoは変更できません");
+            return "redirect:/todos";
+        }
+        
+        todoService.toggleTodo(id);
+        return "redirect:/todos";
     }
 }

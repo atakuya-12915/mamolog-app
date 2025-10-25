@@ -2,59 +2,113 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width,initial-scale=1" />
+	<link rel="stylesheet" href="/css/styles.css" th:href="@{/css/styles.css}">
 	<title>まもログ | 日記一覧</title>
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="/css/styles.css">
 </head>
 
 <body>
-	<div class="container my-4">
+	<div class="app-shell">
+		<!-- ヘッダー -->
+		<div th:replace="~{fragment :: header}"></div>
 
-		<div class="d-flex justify-content-between align-items-center mb-3">
-			<h2>日記一覧</h2>
-			<a href="/diaries/new" class="btn btn-primary">＋ 新規作成</a>
-		</div>
+		<!-- メインエリア -->
+		<main class="main-area">
+			
+			<!-- =========================
+			     検索フォーム / 新規作成
+			     ========================= -->
+			<section class="controls">
+				<form th:action="@{/diaries/search}" method="get" class="search-form">
+					<input id="searchInput" 
+					       type="search" 
+					       name="keyword" 
+					       placeholder="キーワードで検索" 
+					       th:value="${keyword}">
+					<button type="submit" class="btn btn-search">検索</button>
+				</form>
+				<a th:href="@{/diaries/new}" class="btn btn-create">＋ 新規作成</a>
+			</section>
 
-		<div class="row row-cols-1 row-cols-md-2 g-3">
-			<div class="col" th:each="diary : ${diaryPage.content}">
-				<div class="card h-100 shadow-sm">
-					<div class="card-body">
-						<h5 class="card-title" th:text="${diary.content}">日記本文</h5>
-						<p class="text-muted mb-1">
-							<small th:text="${#temporals.format(diary.diaryDate, 'yyyy-MM-dd')}">yyyy-MM-dd</small>
-						</p>
-						<a th:href="@{/diaries/{id}/edit(id=${diary.id})}"
-							class="btn btn-sm btn-outline-secondary">編集</a>
-					</div>
+			<!-- =========================
+			     日記一覧
+			     ========================= -->
+			<section class="diary-section">
+				<h2 class="section-title">日記一覧</h2>
+				
+				<div class="diary-grid">
+					<article th:each="diary : ${diaryPage.content}" class="diary-card">
+						<!-- カード全体をクリック可能に -->
+						<div class="diary-card-inner" th:onclick="'location.href=\'' + @{/diaries/{id}(id=${diary.id})} + '\''">
+							<!-- 写真がある場合 -->
+							<div class="diary-image" th:if="${diary.photoFilename != null}">
+								<img th:src="@{'/uploads/' + ${diary.photoFilename}}" 
+								     alt="日記の写真" />
+							</div>
+							
+							<!-- 写真が無い場合のプレースホルダー -->
+							<div class="diary-image-placeholder" th:unless="${diary.photoFilename != null}">
+								<span class="placeholder-icon">📔</span>
+							</div>
+							
+							<!-- 日付 -->
+							<div class="diary-date">
+								<span th:text="${#temporals.format(diary.diaryDate, 'yyyy年MM月dd日')}">2024-01-20</span>
+							</div>
+							
+							<!-- 内容プレビュー -->
+							<div class="diary-content-preview">
+								<p th:text="${#strings.abbreviate(diary.content, 100)}">日記の内容...</p>
+							</div>
+						</div>
+						
+						<!-- 編集ボタン (カード下部) -->
+						<div class="diary-card-actions">
+							<a th:href="@{/diaries/{id}/edit(id=${diary.id})}" 
+							   class="btn-edit-diary"
+							   onclick="event.stopPropagation();">
+								<span class="edit-icon">✏️</span> 編集
+							</a>
+						</div>
+					</article>
 				</div>
-			</div>
-		</div>
 
-		<!-- ページング -->
-		<nav class="mt-4" th:if="${diaryPage.totalPages > 1}">
-			<ul class="pagination justify-content-center">
-				<li class="page-item" th:classappend="${diaryPage.first} ? 'disabled'">
-					<a class="page-link" th:href="@{/diaries(page=${diaryPage.number - 1})}">&laquo; 前へ</a>
-				</li>
-				<li class="page-item" th:each="i : ${#numbers.sequence(0, diaryPage.totalPages - 1)}"
-					th:classappend="${i == diaryPage.number} ? 'active'">
-					<a class="page-link" th:href="@{/diaries(page=${i})}" th:text="${i + 1}">1</a>
-				</li>
-				<li class="page-item" th:classappend="${diaryPage.last} ? 'disabled'">
-					<a class="page-link" th:href="@{/diaries(page=${diaryPage.number + 1})}">次へ &raquo;</a>
-				</li>
-			</ul>
-		</nav>
+				<!-- 日記が0件の場合 -->
+				<div class="empty-state" th:if="${diaryPage.content.size() == 0}">
+					<p>まだ日記がありません</p>
+					<a th:href="@{/diaries/new}" class="btn btn-create">最初の日記を書く</a>
+				</div>
 
-		<div class="mt-3">
-			<a href="/home" class="btn btn-outline-secondary">Homeに戻る</a>
-		</div>
+				<!-- ページネーション -->
+				<div class="pagination" th:if="${diaryPage.totalPages > 1}">
+					<a th:href="@{/diaries(page=0)}" 
+					   th:classappend="${diaryPage.number == 0} ? 'disabled'">&laquo; 最初</a>
+					
+					<a th:href="@{/diaries(page=${diaryPage.number - 1})}" 
+					   th:classappend="${diaryPage.number == 0} ? 'disabled'">&lt; 前へ</a>
+					
+					<span th:each="i : ${#numbers.sequence(0, diaryPage.totalPages - 1)}">
+						<a th:href="@{/diaries(page=${i})}" 
+						   th:text="${i + 1}"
+						   th:classappend="${i == diaryPage.number} ? 'active'">1</a>
+					</span>
+					
+					<a th:href="@{/diaries(page=${diaryPage.number + 1})}" 
+					   th:classappend="${diaryPage.number + 1 >= diaryPage.totalPages} ? 'disabled'">次へ &gt;</a>
+					
+					<a th:href="@{/diaries(page=${diaryPage.totalPages - 1})}" 
+					   th:classappend="${diaryPage.number + 1 >= diaryPage.totalPages} ? 'disabled'">最後 &raquo;</a>
+				</div>
+			</section>
+		</main>
 
+		<!-- フッター -->
+		<div th:replace="~{fragment :: footer}"></div>
 	</div>
 
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+	<!-- スクリプト -->
+	<div th:replace="~{fragment :: scripts}"></div>
 </body>
 
 </html>

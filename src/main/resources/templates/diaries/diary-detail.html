@@ -1,17 +1,62 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head><meta charset="UTF-8"><title>日記詳細</title></head>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>まもログ | 日記詳細</title>
+<link rel="stylesheet" href="/css/styles.css" th:href="@{/css/styles.css}" />
+</head>
+
 <body>
-<h2 th:text="${diary != null ? diary.diaryDate : '日記がありません'}"></h2>
+<div class="app-shell">
+	<!-- ヘッダー -->
+	<div th:replace="~{fragment :: header}"></div>
+	
+	<main class="main-area">
+		<div class="diary-detail-container">
+			
+			<!-- 日記が存在する場合 -->
+			<div th:if="${diary != null}">
+				<!-- 日付 -->
+				<div class="diary-detail-date">
+					<span th:text="${#temporals.format(diary.diaryDate, 'yyyy年MM月dd日')}">2024年01月20日</span>
+				</div>
 
-<div th:if="${diary != null}">
-    <p th:text="${diary.content}"></p>
+				<!-- 写真 -->
+				<div class="diary-detail-image" th:if="${diary.photoFilename != null}">
+					<img th:src="@{'/uploads/' + ${diary.photoFilename}}" 
+					     alt="日記の写真" />
+				</div>
 
-    <div th:if="${diary.photoFilename != null}">
-        <img th:src="@{'/uploads/' + ${diary.photoFilename}}" style="max-width:420px;"/>
-    </div>
+				<!-- 本文 -->
+				<div class="diary-detail-content">
+					<p th:text="${diary.content}">日記の内容</p>
+				</div>
+
+				<!-- アクションボタン -->
+				<div class="diary-detail-actions">
+					<a th:href="@{/diaries/{id}/edit(id=${diary.id})}" 
+					   class="btn btn-primary">編集</a>
+					<a th:href="@{/diaries}" 
+					   class="btn btn-secondary">一覧へ戻る</a>
+				</div>
+			</div>
+
+			<!-- 日記が存在しない場合 -->
+			<div th:if="${diary == null}" class="empty-state">
+				<p>日記が見つかりません</p>
+				<a th:href="@{/diaries}" class="btn btn-primary">一覧へ戻る</a>
+			</div>
+
+		</div>
+	</main>
+	
+	<!-- フッター -->
+	<div th:replace="~{fragment :: footer}"></div>
 </div>
 
-<a th:href="@{/home}">Homeへ</a>
+<!-- 共通スクリプト -->
+<div th:replace="~{fragment :: scripts}"></div>
 </body>
 </html>

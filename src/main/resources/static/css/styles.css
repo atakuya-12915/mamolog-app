@@ -792,6 +792,148 @@ body {
 }
 
 /* ================================================
+   昨日の日記セクション
+   ================================================ */
+.yesterday-diary {
+  margin-top: 32px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.yesterday-diary h3 {
+  font-size: 18px;
+  color: var(--text);
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.diary-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.diary-preview-content p {
+  color: var(--text);
+  line-height: 1.8;
+  margin: 0;
+  font-size: 15px;
+}
+
+.diary-preview .diary-image {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.diary-preview .diary-image img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.btn-view-diary {
+  align-self: flex-start;
+  padding: 10px 20px;
+  background: var(--accent);
+  color: #fff;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.btn-view-diary:hover {
+  background: var(--accent-2);
+  color: var(--text);
+  border: 1px solid var(--accent);
+}
+
+/* ================================================
+   日記詳細ページ
+   ================================================ */
+.diary-detail-container {
+  max-width: 700px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.diary-detail-date {
+  font-size: 16px;
+  color: var(--muted);
+  font-weight: 600;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--accent-2);
+}
+
+.diary-detail-image {
+  width: 100%;
+  margin-bottom: 24px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.diary-detail-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.diary-detail-content {
+  margin-bottom: 32px;
+}
+
+.diary-detail-content p {
+  color: var(--text);
+  line-height: 1.8;
+  font-size: 15px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.diary-detail-actions {
+  display: flex;
+  gap: 12px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  flex-wrap: wrap;
+}
+
+/* ================================================
+   タブスタイル（hidden クラス）
+   ================================================ */
+.tab-content {
+  display: block;
+}
+
+.tab-content.hidden {
+  display: none;
+}
+
+.tabbar .tab.todo-tab {
+  cursor: pointer;
+  user-select: none;
+}
+
+.tabbar .tab.todo-tab.active {
+  background: var(--accent-2);
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+/* ================================================
    レスポンシブ: タブレット以上
    ================================================ */
 @media (min-width: 768px) {
@@ -869,6 +1011,332 @@ body {
 }
 
 /* ================================================
+   日記一覧のスタイル
+   ================================================ */
+.diary-section {
+  margin-top: 16px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.diary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.diary-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.diary-card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+  transform: translateY(-2px);
+}
+
+.diary-card-inner {
+  padding: 0;
+}
+
+.diary-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background: var(--card);
+}
+
+.diary-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.diary-card:hover .diary-image img {
+  transform: scale(1.05);
+}
+
+.diary-image-placeholder {
+  width: 100%;
+  height: 200px;
+  background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.placeholder-icon {
+  font-size: 64px;
+  opacity: 0.6;
+}
+
+.diary-date {
+  padding: 12px 16px 8px;
+  font-size: 14px;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.diary-content-preview {
+  padding: 0 16px 12px;
+}
+
+.diary-content-preview p {
+  margin: 0;
+  color: var(--text);
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.diary-card-actions {
+  padding: 8px 16px 12px;
+  border-top: 1px solid rgba(0,0,0,0.05);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-edit-diary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--accent-2);
+  color: var(--text);
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  border: 1px solid var(--accent);
+}
+
+.btn-edit-diary:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.edit-icon {
+  font-size: 14px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  background: #fff;
+  border-radius: 12px;
+}
+
+.empty-state p {
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+/* ================================================
+   フォームコンテナ（編集画面）
+   ================================================ */
+.form-container {
+  max-width: 600px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.form-container h2 {
+  font-size: 24px;
+  color: var(--text);
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.edit-title {
+  font-size: 16px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group input[type="time"],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(255,177,153,0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.file-input {
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.photo-preview {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-top: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.current-photo-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  cursor: pointer;
+}
+
+/* タグセクション */
+.tag-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-btn {
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: 1px solid rgba(0,0,0,0.1);
+  background: #fff;
+  color: var(--text);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tag-btn:hover {
+  background: var(--card);
+  border-color: var(--accent);
+}
+
+.tag-btn.active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+/* フォームアクション */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: var(--accent-2);
+  color: var(--text);
+  border: 1px solid var(--accent);
+}
+
+.btn-secondary {
+  background: #fff;
+  color: var(--text);
+  border: 1px solid rgba(0,0,0,0.1);
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-block;
+}
+
+.btn-secondary:hover {
+  background: var(--card);
+  border-color: var(--accent);
+}
+
+.delete-form {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+
+.btn-danger {
+  background: #fff;
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-danger:hover {
+  background: #dc3545;
+  color: #fff;
+}
+
+/* ================================================
    レスポンシブ: 小画面
    ================================================ */
 @media (max-width: 520px) {
@@ -913,6 +1381,30 @@ body {
   
   .todo-meta {
     font-size: 11px;
+  }
+  
+  /* 日記グリッド */
+  .diary-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  /* フォームコンテナ */
+  .form-container {
+    padding: 16px;
+  }
+  
+  .form-container h2 {
+    font-size: 20px;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+  
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
+    text-align: center;
   }
 }
 

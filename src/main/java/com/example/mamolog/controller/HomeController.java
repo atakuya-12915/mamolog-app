@@ -1,46 +1,58 @@
 package com.example.mamolog.controller;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.mamolog.entity.Diary;
 import com.example.mamolog.entity.Todo;
 import com.example.mamolog.repository.DiaryRepository;
-import com.example.mamolog.repository.TodoRepository;
+import com.example.mamolog.security.UserDetailsImpl;
+import com.example.mamolog.service.TodoService;
+
+import lombok.RequiredArgsConstructor;
 
 @Controller
+@RequiredArgsConstructor
 public class HomeController {
-	private final TodoRepository todoRepository;		// Todo用
-	private final DiaryRepository diaryRepository;		// Diary用
-
-	// todoRepositoryのコンストラクタをDI
-	public HomeController(TodoRepository todoRepository, DiaryRepository diaryRepository) {
-		this.todoRepository = todoRepository;
-		this.diaryRepository = diaryRepository;
-	}
-
-	@GetMapping("/home")
-	public String showHome(Model model) {
-		List<Todo> todoList = todoRepository.findByCompleted(false);		// 未完了タスクの取得
-        List<Todo> completedList = todoRepository.findByCompleted(true);	// 完了タスクの取得
-        long remainingCount = todoList.size();								// 未完了タスクの件数
+    
+    private final TodoService todoService;
+    private final DiaryRepository diaryRepository;
+    
+    @GetMapping("/home")
+    public String home(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam(defaultValue = "0") int page,
+            Model model) {
         
-        // 「昨日の日記」表示用        
-        Optional<Diary> y = diaryRepository.findByDiaryDate(LocalDate.now().minusDays(1));
+        if (userDetails == null) {
+            return "redirect:/login";
+        }
         
-        // null 安全のため空リストを保証
-        model.addAttribute("todoList", todoList != null ? todoList : new ArrayList<>());
-        model.addAttribute("completedList", completedList != null ? completedList : new ArrayList<>());
-		
-        model.addAttribute("remainingCount" ,remainingCount);				// 未完了タスクの件数
-        model.addAttribute("yesterdayDiary", y.orElse(null));				// 日記用
-
-		return "index";		// /home → index.html
-	}
+        // 未完了Todoをページネーション取得（10件単位・作成日時降順）
+        Page<Todo> todoPage = todoService.getTodosByUser(
+            userDetails.getUser(), false, page, 10);
+        
+        // 昨日の日記を取得
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        Optional<Diary> yesterdayDiary = diaryRepository.findByUserAndDiaryDate(
+            userDetails.getUser(), yesterday);
+        
+        model.addAttribute("todoPage", todoPage);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("yesterdayDiary", yesterdayDiary.orElse(null));
+        
+        return "index";
+    }
+    
+    @GetMapping("/")
+    public String homeRedirect() {
+        return "redirect:/home";
+    }
 }
